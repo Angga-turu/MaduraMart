@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- versi-final-5: CSS dan JS login sudah digabung di file ini -->
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -7,7 +8,161 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/login.css?v=5">
+  <style>
+svg { width: 20px; height: 20px; }
+:root {
+  --latar: #ffd23f;
+  --kertas: #fcfbf7;
+  --tinta: #1d2b3a;
+  --samar: #5b6773;
+  --galat: #b42318;
+  --aksen: #0f766e;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--latar);
+  color: var(--tinta);
+  font-family: "Courier Prime", "Courier New", monospace;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.kartu {
+  position: relative;
+  width: min(360px, 100%);
+  padding: 32px 26px 26px;
+  background: var(--kertas);
+  box-shadow: 0 8px 18px rgba(29, 43, 58, 0.15);
+}
+
+/* Tepi bawah bergerigi seperti struk */
+.kartu::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 10px;
+  background:
+    linear-gradient(-45deg, transparent 5px, var(--kertas) 0) 0 0 / 10px 10px,
+    linear-gradient(45deg, transparent 5px, var(--kertas) 0) 0 0 / 10px 10px;
+}
+
+h1 {
+  margin: 0 0 22px;
+  padding-bottom: 20px;
+  font-size: 28px;
+  text-align: center;
+  border-bottom: 2px dashed var(--samar);
+}
+
+label { display: block; margin-bottom: 4px; font-weight: 700; }
+
+.kolom {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.ikon, .mata svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ikon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--samar);
+  pointer-events: none;
+}
+
+input::placeholder { color: #8a949e; }
+
+input {
+  width: 100%;
+  padding: 10px 12px 10px 42px;
+  font: inherit;
+  color: var(--tinta);
+  background: #fff;
+  border: 2px solid var(--tinta);
+  border-radius: 0;
+}
+
+input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--aksen);
+  outline-offset: 2px;
+}
+
+button {
+  width: 100%;
+  padding: 11px 14px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--kertas);
+  background: var(--tinta);
+  border: 0;
+  cursor: pointer;
+}
+
+input.ada-mata { padding-right: 46px; }
+
+/* Tombol mata untuk menampilkan atau menyembunyikan kata sandi */
+.kolom .mata {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--samar);
+  background: transparent;
+}
+
+.kolom .mata:hover { color: var(--aksen); background: transparent; }
+.kolom .mata .mata-tutup { display: none; }
+.kolom .mata.tampil .mata-buka { display: none; }
+.kolom .mata.tampil .mata-tutup { display: block; }
+
+button:hover { background: var(--aksen); }
+button:disabled { opacity: 0.6; cursor: wait; }
+
+.galat {
+  margin: -4px 0 14px;
+  color: var(--galat);
+  font-size: 14px;
+}
+
+.bantuan {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--samar);
+}
+
+.bantuan a { color: var(--aksen); font-weight: 700; }
+
+/* Dashboard sementara */
+.kartu .keluar { margin-top: 22px; }
+.kartu .kosong { margin: 0; text-align: center; color: var(--samar); }
+</style>
 </head>
 <body>
   <main class="kartu">
@@ -38,7 +193,67 @@
     <p class="bantuan">Belum mempunyai akun? | <a href="https://wa.me/6287717682382" target="_blank" rel="noopener">Hubungi Admin!</a></p>
   </main>
 
-  <script src="assets/js/db.js?v=3"></script>
-  <script src="assets/js/login.js?v=5"></script>
+  <script src="assets/js/db.js?v=6"></script>
+  <script>
+(function () {
+  var form = document.getElementById('form');
+  var inputNama = document.getElementById('username');
+  var inputSandi = document.getElementById('sandi');
+  var galat = document.getElementById('galat');
+  var tombol = document.getElementById('tombol');
+
+  var tombolMata = document.getElementById('lihat');
+
+  // Tombol mata: tampilkan atau sembunyikan kata sandi
+  tombolMata.addEventListener('click', function () {
+    var terlihat = inputSandi.type === 'text';
+    inputSandi.type = terlihat ? 'password' : 'text';
+    tombolMata.classList.toggle('tampil', !terlihat);
+    tombolMata.setAttribute('aria-pressed', String(!terlihat));
+    tombolMata.setAttribute('aria-label', terlihat ? 'Tampilkan kata sandi' : 'Sembunyikan kata sandi');
+    inputSandi.focus();
+  });
+
+  function tampilGalat(teks) {
+    galat.textContent = teks;
+    galat.hidden = !teks;
+  }
+
+  // Pengguna yang masih punya sesi langsung diarahkan ke dashboard
+  MaduraDB.siapkan().then(function () {
+    return MaduraDB.sesiAktif();
+  }).then(function (sesi) {
+    if (sesi) window.location.replace('dashboard.html');
+  }).catch(function (e) { console.error(e); });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    tampilGalat('');
+
+    if (!inputNama.value.trim() || !inputSandi.value) {
+      tampilGalat('Isi nama pengguna dan kata sandi.');
+      return;
+    }
+
+    tombol.disabled = true;
+    MaduraDB.siapkan().then(function () {
+      return MaduraDB.masuk(inputNama.value, inputSandi.value);
+    }).then(function (berhasil) {
+      if (berhasil) {
+        window.location.replace('dashboard.html');
+      } else {
+        tampilGalat('Nama pengguna atau kata sandi salah.');
+        inputSandi.value = '';
+        inputSandi.focus();
+        tombol.disabled = false;
+      }
+    }).catch(function (err) {
+      console.error(err);
+      tampilGalat('Database di browser tidak bisa dibuka. Matikan mode privat, lalu muat ulang.');
+      tombol.disabled = false;
+    });
+  });
+})();
+</script>
 </body>
 </html>
