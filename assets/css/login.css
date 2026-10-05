@@ -54,10 +54,35 @@ h1 {
 
 label { display: block; margin-bottom: 4px; font-weight: 700; }
 
+.kolom {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.ikon, .mata svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ikon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--samar);
+  pointer-events: none;
+}
+
+input::placeholder { color: #8a949e; }
+
 input {
   width: 100%;
-  margin-bottom: 16px;
-  padding: 10px 12px;
+  padding: 10px 12px 10px 42px;
   font: inherit;
   color: var(--tinta);
   background: #fff;
@@ -80,6 +105,29 @@ button {
   border: 0;
   cursor: pointer;
 }
+
+input.ada-mata { padding-right: 46px; }
+
+/* Tombol mata untuk menampilkan atau menyembunyikan kata sandi */
+.kolom .mata {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--samar);
+  background: transparent;
+}
+
+.kolom .mata:hover { color: var(--aksen); background: transparent; }
+.kolom .mata .mata-tutup { display: none; }
+.kolom .mata.tampil .mata-buka { display: none; }
+.kolom .mata.tampil .mata-tutup { display: block; }
 
 button:hover { background: var(--aksen); }
 button:disabled { opacity: 0.6; cursor: wait; }
