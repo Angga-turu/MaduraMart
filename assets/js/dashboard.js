@@ -109,10 +109,16 @@
     $('kosong').hidden = terakhir.length > 0;
   }
 
+  function gagalMuat(pesan) {
+    var p = el('p', pesan);
+    p.style.cssText = 'margin:0;padding:24px;font-weight:600';
+    document.body.appendChild(p);
+  }
+
   MaduraDB.siapkan().then(function () {
     return MaduraDB.sesiAktif();
   }).then(function (sesi) {
-    // Halaman hanya bisa dibuka jika sudah login
+    // Hanya jika memang belum login, pengguna dikirim ke halaman login
     if (!sesi) { window.location.replace('login.html'); return; }
 
     $('pengguna').textContent = sesi.username;
@@ -124,10 +130,14 @@
 
     return Promise.all([MaduraDB.semua('transaksi'), MaduraDB.semua('produk')]).then(function (h) {
       tampilkan(h[0], h[1]);
+    }).catch(function (galat) {
+      console.error(galat);
+      toast('Data belum bisa dimuat. Coba muat ulang halaman.');
     });
-  }).catch(function (galat) {
+  }, function (galat) {
+    // Database tidak bisa dibuka: tampilkan pesan. Jangan kirim ke login (bisa berputar terus).
     console.error(galat);
-    window.location.replace('login.html');
+    gagalMuat('Database tidak bisa dibuka. Tutup tab MaduraMart yang lain, lalu muat ulang halaman.');
   });
 
   $('keluar').addEventListener('click', function () {
