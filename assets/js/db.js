@@ -32,8 +32,13 @@ var MaduraDB = (function () {
         if (!db.objectStoreNames.contains('pengguna')) db.createObjectStore('pengguna', { keyPath: 'username' });
         if (!db.objectStoreNames.contains('sesi')) db.createObjectStore('sesi', { keyPath: 'id' });
       };
-      req.onsuccess = function () { selesai(req.result); };
+      req.onsuccess = function () {
+        // Lepaskan koneksi jika tab lain butuh memperbarui database
+        req.result.onversionchange = function () { req.result.close(); };
+        selesai(req.result);
+      };
       req.onerror = function () { gagal(req.error); };
+      req.onblocked = function () { gagal(new Error('Database diblokir tab lain, tutup tab MaduraMart yang lain')); };
     });
   }
 
