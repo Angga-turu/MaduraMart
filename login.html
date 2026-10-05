@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - MaduraMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+  <main class="kartu">
+    <h1>MaduraMart</h1>
+
+    <form id="form" novalidate>
+      <label for="username">Nama pengguna</label>
+      <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" required>
+
+      <label for="sandi">Kata sandi</label>
+      <input id="sandi" name="sandi" type="password" autocomplete="current-password" required>
+
+      <p id="galat" class="galat" role="alert" hidden></p>
+
+      <button id="tombol" type="submit">Masuk</button>
+    </form>
+
+    <p class="bantuan">Belum mempunyai akun? | <a href="https://wa.me/6287717682382" target="_blank" rel="noopener">Hubungi Admin!</a></p>
+  </main>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/login.js"></script>
+</body>
+</html>
