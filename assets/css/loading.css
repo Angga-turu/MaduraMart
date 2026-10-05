@@ -3,8 +3,6 @@
   --kertas: #fcfbf7;
   --tinta: #1d2b3a;
   --samar: #6b7885;
-  --aksen: #0f766e;
-  --galat: #b42318;
   --mesin: #2a3846;
 }
 
@@ -20,8 +18,6 @@ body {
   background: var(--latar);
   color: var(--tinta);
   font-family: "Courier Prime", "Courier New", monospace;
-  font-size: 15px;
-  line-height: 1.5;
 }
 
 .mesin { width: min(340px, 100%); }
@@ -45,7 +41,7 @@ body {
 
 .struk {
   position: relative;
-  padding: 28px 22px 22px;
+  padding: 32px 22px 30px;
   background: var(--kertas);
   box-shadow: 0 8px 18px rgba(29, 43, 58, 0.15);
   animation: keluar 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -71,54 +67,19 @@ body {
 
 h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   text-align: center;
   letter-spacing: 0.5px;
 }
 
-.slogan {
-  margin: 2px 0 0;
-  text-align: center;
-  color: var(--samar);
-  font-size: 13px;
-}
-
-.baris {
-  list-style: none;
-  margin: 22px 0 18px;
-  padding: 18px 0 0;
-  border-top: 2px dashed var(--samar);
-  min-height: 96px;
-}
-
-.baris li {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.baris li::before {
-  content: "";
-  order: 2;
-  flex: 1;
-  border-bottom: 2px dotted var(--samar);
-  transform: translateY(-4px);
-}
-
-.baris .teks { order: 1; }
-.baris .nilai { order: 3; font-weight: 700; }
-.baris .nilai.ok { color: var(--aksen); }
-.baris .nilai.gagal { color: var(--galat); }
-
 .progres {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--samar);
 }
 
 .batang {
-  flex: 1;
   height: 12px;
   border: 2px solid var(--tinta);
   padding: 2px;
@@ -130,41 +91,6 @@ h1 {
   background: var(--tinta);
   transform-origin: left;
   transform: scaleX(0);
-}
-
-#persen {
-  min-width: 4ch;
-  text-align: right;
-  font-weight: 700;
-}
-
-.status {
-  margin: 16px 0 0;
-  text-align: center;
-  color: var(--samar);
-  font-size: 13px;
-}
-
-.status.galat { color: var(--galat); }
-.status.siap { color: var(--aksen); font-weight: 700; }
-
-.ulang {
-  display: block;
-  margin: 14px auto 0;
-  padding: 8px 18px;
-  font: inherit;
-  font-weight: 700;
-  color: var(--kertas);
-  background: var(--tinta);
-  border: 0;
-  cursor: pointer;
-}
-
-.ulang:hover { background: var(--aksen); }
-
-.ulang:focus-visible {
-  outline: 3px solid var(--aksen);
-  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
