@@ -16,8 +16,10 @@
     if (p < 1) {
       requestAnimationFrame(frame);
     } else {
-      // Nanti, setelah halaman login dibuat:
-      // window.location.href = 'login.html';
+      // Sudah login: langsung ke dashboard. Belum: ke halaman login.
+      var tujuan = function (ada) { window.location.replace(ada ? 'dashboard.html' : 'login.html'); };
+      if (typeof MaduraDB === 'undefined') { tujuan(false); return; }
+      MaduraDB.sesiAktif().then(function (sesi) { tujuan(!!sesi); }, function () { tujuan(false); });
     }
   }
 
