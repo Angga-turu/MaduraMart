@@ -18,8 +18,12 @@
     } else {
       // Sudah login: langsung ke dashboard. Belum: ke halaman login.
       var tujuan = function (ada) { window.location.replace(ada ? 'dashboard.html' : 'login.html'); };
-      if (typeof MaduraDB === 'undefined') { tujuan(false); return; }
-      MaduraDB.sesiAktif().then(function (sesi) { tujuan(!!sesi); }, function () { tujuan(false); });
+      try {
+        MaduraDB.sesiAktif().then(function (sesi) { tujuan(!!sesi); }, function () { tujuan(false); });
+      } catch (galat) {
+        console.error(galat);
+        tujuan(false);
+      }
     }
   }
 
