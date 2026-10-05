@@ -1,0 +1,104 @@
+:root {
+  --latar: #ffd23f;
+  --kertas: #fcfbf7;
+  --tinta: #1d2b3a;
+  --samar: #5b6773;
+  --galat: #b42318;
+  --aksen: #0f766e;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--latar);
+  color: var(--tinta);
+  font-family: "Courier Prime", "Courier New", monospace;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.kartu {
+  position: relative;
+  width: min(360px, 100%);
+  padding: 32px 26px 26px;
+  background: var(--kertas);
+  box-shadow: 0 8px 18px rgba(29, 43, 58, 0.15);
+}
+
+/* Tepi bawah bergerigi seperti struk */
+.kartu::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 10px;
+  background:
+    linear-gradient(-45deg, transparent 5px, var(--kertas) 0) 0 0 / 10px 10px,
+    linear-gradient(45deg, transparent 5px, var(--kertas) 0) 0 0 / 10px 10px;
+}
+
+h1 {
+  margin: 0 0 22px;
+  padding-bottom: 20px;
+  font-size: 28px;
+  text-align: center;
+  border-bottom: 2px dashed var(--samar);
+}
+
+label { display: block; margin-bottom: 4px; font-weight: 700; }
+
+input {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--tinta);
+  background: #fff;
+  border: 2px solid var(--tinta);
+  border-radius: 0;
+}
+
+input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--aksen);
+  outline-offset: 2px;
+}
+
+button {
+  width: 100%;
+  padding: 11px 14px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--kertas);
+  background: var(--tinta);
+  border: 0;
+  cursor: pointer;
+}
+
+button:hover { background: var(--aksen); }
+button:disabled { opacity: 0.6; cursor: wait; }
+
+.galat {
+  margin: -4px 0 14px;
+  color: var(--galat);
+  font-size: 14px;
+}
+
+.bantuan {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--samar);
+}
+
+.bantuan a { color: var(--aksen); font-weight: 700; }
+
+/* Dashboard sementara */
+.kartu .keluar { margin-top: 22px; }
+.kartu .kosong { margin: 0; text-align: center; color: var(--samar); }
