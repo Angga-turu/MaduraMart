@@ -3,7 +3,7 @@
 // ke database online (misalnya Supabase), cukup ganti isi file ini.
 var MaduraDB = (function () {
   var NAMA_DB = 'maduramart_db';
-  var VERSI = 2;
+  var VERSI = 3;
   var GARAM = 'maduramart-v1';
   var koneksi = null;
 
@@ -31,6 +31,8 @@ var MaduraDB = (function () {
         if (!db.objectStoreNames.contains('pengaturan')) db.createObjectStore('pengaturan', { keyPath: 'id' });
         if (!db.objectStoreNames.contains('pengguna')) db.createObjectStore('pengguna', { keyPath: 'username' });
         if (!db.objectStoreNames.contains('sesi')) db.createObjectStore('sesi', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('produk')) db.createObjectStore('produk', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('transaksi')) db.createObjectStore('transaksi', { keyPath: 'id', autoIncrement: true });
       };
       req.onsuccess = function () {
         // Lepaskan koneksi jika tab lain butuh memperbarui database
@@ -53,6 +55,7 @@ var MaduraDB = (function () {
 
   function ambil(tabel, kunci) { return jalankan(tabel, 'readonly', function (s) { return s.get(kunci); }, true); }
   function simpan(tabel, data) { return jalankan(tabel, 'readwrite', function (s) { return s.put(data); }).then(function () { return data; }); }
+  function semua(tabel) { return jalankan(tabel, 'readonly', function (s) { return s.getAll(); }, true); }
   function hapus(tabel, kunci) { return jalankan(tabel, 'readwrite', function (s) { return s.delete(kunci); }); }
 
   function hash(username, sandi) {
@@ -98,5 +101,5 @@ var MaduraDB = (function () {
 
   function keluar() { return hapus('sesi', 1); }
 
-  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar };
+  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua };
 })();
