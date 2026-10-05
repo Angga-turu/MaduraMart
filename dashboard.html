@@ -7,27 +7,45 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/login.css?v=3">
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=7">
 </head>
 <body>
-  <main class="kartu">
-    <h1>Dashboard</h1>
-    <p class="kosong">Halaman ini masih kosong.</p>
-    <button id="keluar" class="keluar" type="button">Keluar</button>
-  </main>
+  <header class="atas">
+    <span class="merek">MaduraMart</span>
+    <div class="akun">
+      <span id="pengguna"></span>
+      <button id="keluar" class="keluar" type="button">Keluar</button>
+    </div>
+  </header>
 
-  <script src="assets/js/db.js?v=6"></script>
-  <script>
-    // Halaman hanya bisa dibuka jika sudah login
-    MaduraDB.siapkan().then(function () {
-      return MaduraDB.sesiAktif();
-    }).then(function (sesi) {
-      if (!sesi) window.location.replace('login.html');
-    }).catch(function () { window.location.replace('login.html'); });
+  <div id="konten" hidden>
+    <nav class="menu" aria-label="Menu utama">
+      <button class="aktif" type="button" aria-current="page">Dashboard</button>
+      <button type="button" disabled title="Belum tersedia">Kasir</button>
+      <button type="button" disabled title="Belum tersedia">Produk</button>
+      <button type="button" disabled title="Belum tersedia">Laporan</button>
+    </nav>
 
-    document.getElementById('keluar').addEventListener('click', function () {
-      MaduraDB.keluar().then(function () { window.location.replace('login.html'); });
-    });
-  </script>
+    <main class="isi">
+      <h1>Halo, <span id="sapaan"></span></h1>
+      <p class="tanggal" id="tanggal"></p>
+
+      <section class="ringkasan" aria-label="Ringkasan hari ini">
+        <div class="angka-kotak"><p class="label">Penjualan hari ini</p><p class="angka" id="penjualan">Rp 0</p></div>
+        <div class="angka-kotak"><p class="label">Transaksi hari ini</p><p class="angka" id="jumlah-transaksi">0</p></div>
+        <div class="angka-kotak"><p class="label">Jumlah produk</p><p class="angka" id="jumlah-produk">0</p></div>
+        <div class="angka-kotak"><p class="label">Stok menipis</p><p class="angka" id="stok-menipis">0</p></div>
+      </section>
+
+      <section class="struk" aria-label="Transaksi terakhir">
+        <h2>Transaksi terakhir</h2>
+        <ul id="daftar" class="daftar"></ul>
+        <p id="kosong" class="kosong">Belum ada transaksi.</p>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/db.js?v=7"></script>
+  <script src="assets/js/dashboard.js?v=7"></script>
 </body>
 </html>
