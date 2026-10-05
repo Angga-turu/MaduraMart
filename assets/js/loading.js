@@ -22,7 +22,11 @@
   }
 
   // Buka database lebih dulu, lalu jalankan animasi dengan pengaturan dari sana
-  MaduraDB.siapkan().then(function (p) {
+  var siap = (typeof MaduraDB !== 'undefined')
+    ? MaduraDB.siapkan()
+    : Promise.reject(new Error('db.js tidak termuat'));
+
+  siap.then(function (p) {
     judul.textContent = p.nama_aplikasi;
     document.title = p.nama_aplikasi;
     durasi = Math.max(2000, Math.min(15000, Number(p.durasi_loading) || 4000));
