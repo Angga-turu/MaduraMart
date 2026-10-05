@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - MaduraMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+  <main class="kartu">
+    <h1>Dashboard</h1>
+    <p class="kosong">Halaman ini masih kosong.</p>
+    <button id="keluar" class="keluar" type="button">Keluar</button>
+  </main>
+
+  <script src="assets/js/db.js"></script>
+  <script>
+    // Halaman hanya bisa dibuka jika sudah login
+    MaduraDB.siapkan().then(function () {
+      return MaduraDB.sesiAktif();
+    }).then(function (sesi) {
+      if (!sesi) window.location.replace('login.html');
+    }).catch(function () { window.location.replace('login.html'); });
+
+    document.getElementById('keluar').addEventListener('click', function () {
+      MaduraDB.keluar().then(function () { window.location.replace('login.html'); });
+    });
+  </script>
+</body>
+</html>
