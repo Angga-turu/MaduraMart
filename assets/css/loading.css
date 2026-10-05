@@ -88,11 +88,19 @@ h1 {
 .batang i {
   display: block;
   height: 100%;
-  background: var(--tinta);
+  background: repeating-linear-gradient(-45deg, var(--tinta) 0 8px, #4a6078 8px 16px);
   transform-origin: left;
   transform: scaleX(0);
+  animation: garis 0.7s linear infinite;
+}
+
+/* Garis miring bergerak terus, jadi bar terlihat aktif meski progres lambat */
+@keyframes garis {
+  from { background-position: 0 0; }
+  to { background-position: 22.63px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .struk { animation: none; }
+  .batang i { animation: none; }
 }
