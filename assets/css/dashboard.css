@@ -66,7 +66,11 @@ button:focus-visible { outline: 3px solid var(--aksen); outline-offset: 2px; }
 .item.keluar { color: #ffb4a8; }
 
 /* ---------- Area utama ---------- */
-.utama { min-width: 0; }
+.utama { grid-column: 2; min-width: 0; }
+
+/* Lapisan gelap di belakang laci menu: tersembunyi di layar lebar,
+   supaya tidak ikut mengisi kolom grid */
+.tirai { display: none; }
 
 .bar {
   position: sticky; top: 0; z-index: 5;
