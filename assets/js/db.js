@@ -113,6 +113,20 @@ var MaduraDB = (function () {
     });
   }
 
+  // Menambah produk baru (tanpa id) atau mengubah produk (dengan id)
+  function simpanProduk(produk) {
+    return new Promise(function (selesai, gagal) {
+      if (!String(produk.nama || '').trim()) { gagal(new Error('Nama produk wajib diisi')); return; }
+      if (!(produk.harga >= 0) || !(produk.stok >= 0)) { gagal(new Error('Harga dan stok tidak boleh negatif')); return; }
+      var tx = koneksi.transaction('produk', 'readwrite');
+      var req = tx.objectStore('produk').put(produk);
+      tx.oncomplete = function () { produk.id = req.result; selesai(produk); };
+      tx.onerror = function () { gagal(tx.error); };
+    });
+  }
+
+  function hapusProduk(id) { return hapus('produk', id); }
+
   // Mencatat transaksi dan mengurangi stok dalam satu transaksi database
   // (jika satu langkah gagal, semuanya dibatalkan). Total dihitung dari harga di database.
   function catatTransaksi(data) {
@@ -166,5 +180,5 @@ var MaduraDB = (function () {
 
   function keluar() { return hapus('sesi', 1); }
 
-  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi };
+  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk };
 })();

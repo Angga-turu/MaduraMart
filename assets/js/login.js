@@ -24,7 +24,7 @@
 
   // Datang dari dashboard berarti dashboard menolak sesinya.
   // Sesi direset supaya halaman tidak berpindah-pindah terus.
-  var dariDashboard = /dashboard|kasir/.test(document.referrer) || /dari=/.test(window.location.search);
+  var dariDashboard = /dashboard|kasir|produk/.test(document.referrer) || /dari=/.test(window.location.search);
 
   // Pengguna yang masih punya sesi langsung diarahkan ke dashboard
   MaduraDB.siapkan().then(function () {
