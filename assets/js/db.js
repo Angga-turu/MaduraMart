@@ -14,6 +14,21 @@ var MaduraDB = (function () {
     durasi_loading: 4000 // milidetik
   };
 
+  // Produk contoh, diisi satu kali agar halaman Kasir bisa dicoba.
+  // Setelah halaman Produk dibuat, produk ini bisa diubah atau dihapus.
+  var PRODUK_CONTOH = [
+    { nama: 'Beras 5 kg', kategori: 'Sembako', harga: 68000, stok: 20 },
+    { nama: 'Minyak Goreng 1 L', kategori: 'Sembako', harga: 18000, stok: 25 },
+    { nama: 'Gula Pasir 1 kg', kategori: 'Sembako', harga: 17000, stok: 30 },
+    { nama: 'Telur Ayam 1 kg', kategori: 'Sembako', harga: 28000, stok: 15 },
+    { nama: 'Mie Instan', kategori: 'Makanan', harga: 3500, stok: 100 },
+    { nama: 'Kopi Sachet', kategori: 'Minuman', harga: 2000, stok: 80 },
+    { nama: 'Teh Botol', kategori: 'Minuman', harga: 6000, stok: 40 },
+    { nama: 'Air Mineral 600 ml', kategori: 'Minuman', harga: 3500, stok: 60 },
+    { nama: 'Sabun Mandi', kategori: 'Kebutuhan Rumah', harga: 4500, stok: 35 },
+    { nama: 'Deterjen 800 g', kategori: 'Kebutuhan Rumah', harga: 17000, stok: 4 }
+  ];
+
   // Sandi disimpan sebagai hash (SHA-256), bukan teks asli
   var ADMIN_AWAL = {
     username: 'admin',
@@ -77,7 +92,57 @@ var MaduraDB = (function () {
     }).then(function (pengaturan) {
       return ambil('pengguna', ADMIN_AWAL.username).then(function (admin) {
         return admin || simpan('pengguna', ADMIN_AWAL);
-      }).then(function () { return pengaturan; });
+      }).then(function () { return isiContoh(pengaturan); });
+    });
+  }
+
+  // Mengisi produk contoh sekali saja, dan hanya jika tabel produk masih kosong
+  function isiContoh(pengaturan) {
+    if (pengaturan.contoh_diisi) return Promise.resolve(pengaturan);
+    return new Promise(function (selesai, gagal) {
+      var tx = koneksi.transaction(['produk', 'pengaturan'], 'readwrite');
+      var tabel = tx.objectStore('produk');
+      var hitung = tabel.count();
+      hitung.onsuccess = function () {
+        if (hitung.result === 0) PRODUK_CONTOH.forEach(function (p) { tabel.add(p); });
+        pengaturan.contoh_diisi = true;
+        tx.objectStore('pengaturan').put(pengaturan);
+      };
+      tx.oncomplete = function () { selesai(pengaturan); };
+      tx.onerror = function () { gagal(tx.error); };
+    });
+  }
+
+  // Mencatat transaksi dan mengurangi stok dalam satu transaksi database
+  // (jika satu langkah gagal, semuanya dibatalkan). Total dihitung dari harga di database.
+  function catatTransaksi(data) {
+    return new Promise(function (selesai, gagal) {
+      if (!data.item.length) { gagal(new Error('Keranjang kosong')); return; }
+      var tx = koneksi.transaction(['produk', 'transaksi'], 'readwrite');
+      var tProduk = tx.objectStore('produk');
+      var galat = null, rec = null, baris = [], tersisa = data.item.length;
+      function batal(pesan) { if (!galat) galat = new Error(pesan); tx.abort(); }
+
+      data.item.forEach(function (it) {
+        var r = tProduk.get(it.id);
+        r.onsuccess = function () {
+          var p = r.result;
+          if (!p) { batal('Produk tidak ditemukan'); return; }
+          if (Number(p.stok) < it.jumlah) { batal('Stok ' + p.nama + ' tidak cukup'); return; }
+          p.stok = Number(p.stok) - it.jumlah;
+          tProduk.put(p);
+          baris.push({ id: p.id, nama: p.nama, harga: p.harga, jumlah: it.jumlah, subtotal: p.harga * it.jumlah });
+          if (--tersisa === 0) {
+            var total = baris.reduce(function (a, b) { return a + b.subtotal; }, 0);
+            if (!(data.bayar >= total)) { batal('Uang yang diterima kurang'); return; }
+            rec = { waktu: new Date().toISOString(), kasir: data.kasir, item: baris, total: total, bayar: data.bayar, kembali: data.bayar - total };
+            var tambah = tx.objectStore('transaksi').add(rec);
+            tambah.onsuccess = function () { rec.id = tambah.result; };
+          }
+        };
+      });
+      tx.oncomplete = function () { selesai(rec); };
+      tx.onabort = function () { gagal(galat || tx.error || new Error('Transaksi dibatalkan')); };
     });
   }
 
@@ -101,5 +166,5 @@ var MaduraDB = (function () {
 
   function keluar() { return hapus('sesi', 1); }
 
-  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua };
+  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi };
 })();

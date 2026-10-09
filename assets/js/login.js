@@ -22,11 +22,21 @@
     galat.hidden = !teks;
   }
 
+  // Datang dari dashboard berarti dashboard menolak sesinya.
+  // Sesi direset supaya halaman tidak berpindah-pindah terus.
+  var dariDashboard = /dashboard|kasir/.test(document.referrer) || /dari=/.test(window.location.search);
+
   // Pengguna yang masih punya sesi langsung diarahkan ke dashboard
   MaduraDB.siapkan().then(function () {
     return MaduraDB.sesiAktif();
   }).then(function (sesi) {
-    if (sesi) window.location.replace('dashboard.html');
+    if (!sesi) return;
+    if (dariDashboard) {
+      return MaduraDB.keluar().then(function () {
+        tampilGalat('Sesi sebelumnya tidak valid. Silakan masuk lagi.');
+      });
+    }
+    window.location.replace('dashboard.html');
   }).catch(function (e) { console.error(e); });
 
   form.addEventListener('submit', function (e) {

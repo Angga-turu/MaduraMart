@@ -39,6 +39,11 @@
     });
   });
 
+  // Menu yang menuju halaman lain
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ke]'), function (b) {
+    b.addEventListener('click', function () { window.location.href = b.getAttribute('data-ke'); });
+  });
+
   // ---------- Tanggal dan jam ----------
   function jam() {
     var n = new Date();
@@ -119,7 +124,7 @@
     return MaduraDB.sesiAktif();
   }).then(function (sesi) {
     // Hanya jika memang belum login, pengguna dikirim ke halaman login
-    if (!sesi) { window.location.replace('login.html'); return; }
+    if (!sesi) { window.location.replace('login.html?dari=dashboard'); return; }
 
     $('pengguna').textContent = sesi.username;
     $('avatar').textContent = sesi.username.charAt(0).toUpperCase();
