@@ -34,8 +34,15 @@
 
 @media (max-width: 900px) { .halaman-laporan { padding: 16px 16px 32px; } }
 
+.kop-cetak { display: none; }
+
 /* Cetak laporan: tanpa menu samping dan tombol */
 @media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .kop-cetak { display: block; }
+  .kop-cetak h2 { margin: 0; font-size: 22px; }
+  .kop-cetak p { margin: 2px 0 0; color: var(--samar); }
+  .kartu, .kpi { break-inside: avoid; box-shadow: none; }
   .samping, .bar, .alat-laporan, .bar-bawah, .toast, .lainnya { display: none !important; }
   .app { display: block; }
   .halaman-laporan { padding: 0; }

@@ -118,10 +118,10 @@ dialog::backdrop { background: rgba(29, 43, 58, 0.55); }
   .bar-bawah strong { font-family: "Courier Prime", monospace; font-size: 20px; }
 }
 
-/* ---------- Cetak: hanya struk ---------- */
+/* ---------- Cetak: hanya struk (aktif saat tombol Cetak di struk ditekan) ---------- */
 @media print {
-  body * { visibility: hidden; }
-  #dlg-struk, #dlg-struk .kertas, #dlg-struk .kertas * { visibility: visible; }
-  #dlg-struk { position: absolute; left: 0; top: 0; width: 100%; max-height: none; box-shadow: none; }
-  .struk-aksi { display: none; }
+  body.cetak-struk * { visibility: hidden; }
+  body.cetak-struk #dlg-struk, body.cetak-struk #dlg-struk .kertas, body.cetak-struk #dlg-struk .kertas * { visibility: visible; }
+  body.cetak-struk #dlg-struk { position: absolute; left: 0; top: 0; width: 100%; max-height: none; box-shadow: none; }
+  body.cetak-struk .struk-aksi { display: none; }
 }
