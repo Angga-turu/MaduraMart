@@ -30,9 +30,12 @@ var MaduraDB = (function () {
   ];
 
   // Sandi disimpan sebagai hash (SHA-256), bukan teks asli
+  // Hash sandi bawaan lama (kelompok7). Akun admin yang masih memakainya otomatis dialihkan ke sandi bawaan baru.
+  var HASH_ADMIN_LAMA = 'e66129f67ab0ad2d39db53e33c362d08b8e5c2f7de0e5febf5ade7ffdfdafb26';
+
   var ADMIN_AWAL = {
     username: 'admin',
-    sandi_hash: 'e66129f67ab0ad2d39db53e33c362d08b8e5c2f7de0e5febf5ade7ffdfdafb26',
+    sandi_hash: '6d4351a7dd6a50a15d9cfdfb468cbc905dee0eb228f16d325d74dd0df5b90cf4',
     peran: 'admin'
   };
 
@@ -91,7 +94,11 @@ var MaduraDB = (function () {
       return data || simpan('pengaturan', DATA_AWAL);
     }).then(function (pengaturan) {
       return ambil('pengguna', ADMIN_AWAL.username).then(function (admin) {
-        return admin || simpan('pengguna', ADMIN_AWAL);
+        if (!admin) return simpan('pengguna', ADMIN_AWAL);
+        if (admin.sandi_hash === HASH_ADMIN_LAMA) {
+          admin.sandi_hash = ADMIN_AWAL.sandi_hash;
+          return simpan('pengguna', admin);
+        }
       }).then(function () { return isiContoh(pengaturan); });
     });
   }
