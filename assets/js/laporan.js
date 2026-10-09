@@ -178,25 +178,64 @@
     $('dlg-struk').showModal();
   }
 
-  // ---------- Unduh CSV (pemisah titik koma agar rapi di Excel Indonesia) ----------
-  function unduh() {
-    var baru = terfilter().sort(function (a, b) { return new Date(a.waktu) - new Date(b.waktu); });
+  // ---------- Unduh Excel (.xlsx), cadangan CSV jika pustaka Excel gagal dimuat ----------
+  function serialExcel(iso) {
+    var d = new Date(iso);
+    return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()) / 86400000 + 25569;
+  }
+
+  function unduhCsv(daftar) {
     var rows = [['No', 'Waktu', 'Kasir', 'Barang', 'Total', 'Tunai', 'Kembali']];
-    baru.forEach(function (t) {
-      rows.push([t.id, waktuLokal(t.waktu, true), t.kasir,
-        t.item.map(function (i) { return i.nama + ' x' + i.jumlah; }).join(', '), t.total, t.bayar, t.kembali]);
+    daftar.forEach(function (t) {
+      rows.push([t.id, waktuLokal(t.waktu, true), t.kasir, t.item.map(function (i) { return i.nama + ' x' + i.jumlah; }).join(', '), t.total, t.bayar, t.kembali]);
     });
     var teks = rows.map(function (r) {
       return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';');
     }).join('\r\n');
-    var blob = new Blob(['\ufeff' + teks], { type: 'text/csv;charset=utf-8' });
     var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + teks], { type: 'text/csv;charset=utf-8' }));
     a.download = 'laporan-maduramart-' + periode + '.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  function unduh() {
+    var daftar = terfilter().sort(function (a, b) { return new Date(a.waktu) - new Date(b.waktu); });
+    if (typeof XLSX === 'undefined') { unduhCsv(daftar); Shell.toast('Pustaka Excel tidak termuat, file CSV diunduh.'); return; }
+
+    var n = daftar.length, awal = 5, akhir = 4 + n;
+    var rows = [['Laporan Penjualan MaduraMart'], ['Periode: ' + NAMA[periode]], [], ['No', 'Waktu', 'Kasir', 'Barang', 'Total (Rp)', 'Tunai (Rp)', 'Kembali (Rp)']];
+    var jumlah = { total: 0, bayar: 0, kembali: 0 };
+    daftar.forEach(function (t) {
+      jumlah.total += t.total; jumlah.bayar += t.bayar; jumlah.kembali += t.kembali;
+      rows.push([t.id, serialExcel(t.waktu), t.kasir, t.item.map(function (i) { return i.nama + ' x' + i.jumlah; }).join(', '), t.total, t.bayar, t.kembali]);
+    });
+    function jumKolom(huruf, nilai) { return { t: 'n', v: nilai, f: 'SUM(' + huruf + awal + ':' + huruf + akhir + ')' }; }
+    rows.push(['', '', '', 'Jumlah', jumKolom('E', jumlah.total), jumKolom('F', jumlah.bayar), jumKolom('G', jumlah.kembali)]);
+
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    for (var r = awal; r <= akhir + 1; r++) {
+      if (r <= akhir) ws['B' + r].z = 'dd/mm/yyyy hh:mm';
+      ['E', 'F', 'G'].forEach(function (k) { if (ws[k + r]) ws[k + r].z = '#,##0'; });
+    }
+    ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 52 }, { wch: 14 }, { wch: 14 }, { wch: 14 }];
+
+    // Lembar kedua: satu baris per barang yang terjual
+    var rinci = [['No. transaksi', 'Waktu', 'Barang', 'Jumlah', 'Harga (Rp)', 'Subtotal (Rp)']];
+    daftar.forEach(function (t) {
+      t.item.forEach(function (i) { rinci.push([t.id, serialExcel(t.waktu), i.nama, i.jumlah, i.harga, i.subtotal]); });
+    });
+    var ws2 = XLSX.utils.aoa_to_sheet(rinci);
+    for (var k = 2; k <= rinci.length; k++) {
+      ws2['B' + k].z = 'dd/mm/yyyy hh:mm';
+      ['E', 'F'].forEach(function (h) { ws2[h + k].z = '#,##0'; });
+    }
+    ws2['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 28 }, { wch: 9 }, { wch: 14 }, { wch: 14 }];
+
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Laporan');
+    XLSX.utils.book_append_sheet(wb, ws2, 'Rincian barang');
+    XLSX.writeFile(wb, 'laporan-maduramart-' + periode + '.xlsx');
   }
 
   function cetakStruk() {
