@@ -201,41 +201,103 @@
 
   function unduh() {
     var daftar = terfilter().sort(function (a, b) { return new Date(a.waktu) - new Date(b.waktu); });
-    if (typeof XLSX === 'undefined') { unduhCsv(daftar); Shell.toast('Pustaka Excel tidak termuat, file CSV diunduh.'); return; }
+    if (typeof ExcelJS === 'undefined') { unduhCsv(daftar); Shell.toast('Pustaka Excel tidak termuat, file CSV diunduh.'); return; }
 
+    var HITAM = 'FF1D2B3A', KUNING = 'FFFFD23F', KRIM = 'FFFAF9F4', GARIS = 'FFE6E1D2', SAMAR = 'FF667483';
+    var tepi = { bottom: { style: 'thin', color: { argb: GARIS } } };
+    var FORMAT_WAKTU = 'dd/mm/yyyy hh:mm', FORMAT_UANG = '#,##0';
+
+    function isi(ws, baris, nilai) {
+      nilai.forEach(function (v, i) { ws.getCell(baris, i + 1).value = v; });
+    }
+    function kepala(ws, baris, jumlahKolom, kolomAngka) {
+      ws.getRow(baris).height = 22;
+      for (var k = 1; k <= jumlahKolom; k++) {
+        var c = ws.getCell(baris, k);
+        c.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: HITAM } };
+        c.alignment = { vertical: 'middle', horizontal: kolomAngka.indexOf(k) > -1 ? 'right' : 'left' };
+      }
+    }
+    function rapikan(ws, baris, jumlahKolom, zebra) {
+      for (var k = 1; k <= jumlahKolom; k++) {
+        var c = ws.getCell(baris, k);
+        c.border = tepi;
+        c.alignment = { vertical: 'middle', horizontal: c.alignment && c.alignment.horizontal };
+        if (zebra) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: KRIM } };
+      }
+    }
+
+    var wb = new ExcelJS.Workbook();
+    wb.creator = 'MaduraMart';
+
+    // ----- Lembar 1: Laporan -----
     var n = daftar.length, awal = 5, akhir = 4 + n;
-    var rows = [['Laporan Penjualan MaduraMart'], ['Periode: ' + NAMA[periode]], [], ['No', 'Waktu', 'Kasir', 'Barang', 'Total (Rp)', 'Tunai (Rp)', 'Kembali (Rp)']];
+    var ws = wb.addWorksheet('Laporan', { views: [{ state: 'frozen', ySplit: 4, showGridLines: false }] });
+    ws.columns = [{ width: 6 }, { width: 19 }, { width: 12 }, { width: 52 }, { width: 16 }, { width: 16 }, { width: 16 }];
+    ws.mergeCells('A1:G1');
+    ws.getCell('A1').value = 'Laporan Penjualan MaduraMart';
+    ws.getCell('A1').font = { bold: true, size: 18, color: { argb: HITAM } };
+    ws.mergeCells('A2:G2');
+    ws.getCell('A2').value = 'Periode: ' + NAMA[periode] + ' | Dicetak: ' + waktuLokal(new Date().toISOString(), true);
+    ws.getCell('A2').font = { color: { argb: SAMAR } };
+    isi(ws, 4, ['No', 'Waktu', 'Kasir', 'Barang', 'Total (Rp)', 'Tunai (Rp)', 'Kembali (Rp)']);
+    kepala(ws, 4, 7, [1, 5, 6, 7]);
+
     var jumlah = { total: 0, bayar: 0, kembali: 0 };
-    daftar.forEach(function (t) {
+    daftar.forEach(function (t, i) {
+      var r = awal + i;
       jumlah.total += t.total; jumlah.bayar += t.bayar; jumlah.kembali += t.kembali;
-      rows.push([t.id, serialExcel(t.waktu), t.kasir, t.item.map(function (i) { return i.nama + ' x' + i.jumlah; }).join(', '), t.total, t.bayar, t.kembali]);
+      isi(ws, r, [t.id, serialExcel(t.waktu), t.kasir, t.item.map(function (x) { return x.nama + ' x' + x.jumlah; }).join(', '), t.total, t.bayar, t.kembali]);
+      ws.getCell(r, 1).alignment = { horizontal: 'left' };
+      ws.getCell(r, 2).numFmt = FORMAT_WAKTU;
+      [5, 6, 7].forEach(function (k) { ws.getCell(r, k).numFmt = FORMAT_UANG; });
+      rapikan(ws, r, 7, i % 2 === 1);
     });
-    function jumKolom(huruf, nilai) { return { t: 'n', v: nilai, f: 'SUM(' + huruf + awal + ':' + huruf + akhir + ')' }; }
-    rows.push(['', '', '', 'Jumlah', jumKolom('E', jumlah.total), jumKolom('F', jumlah.bayar), jumKolom('G', jumlah.kembali)]);
 
-    var ws = XLSX.utils.aoa_to_sheet(rows);
-    for (var r = awal; r <= akhir + 1; r++) {
-      if (r <= akhir) ws['B' + r].z = 'dd/mm/yyyy hh:mm';
-      ['E', 'F', 'G'].forEach(function (k) { if (ws[k + r]) ws[k + r].z = '#,##0'; });
+    var rt = akhir + 1;
+    isi(ws, rt, ['', '', '', 'Jumlah']);
+    [['E', 5, jumlah.total], ['F', 6, jumlah.bayar], ['G', 7, jumlah.kembali]].forEach(function (k) {
+      ws.getCell(rt, k[1]).value = { formula: 'SUM(' + k[0] + awal + ':' + k[0] + akhir + ')', result: k[2] };
+      ws.getCell(rt, k[1]).numFmt = FORMAT_UANG;
+    });
+    for (var c = 1; c <= 7; c++) {
+      var sel = ws.getCell(rt, c);
+      sel.font = { bold: true, color: { argb: HITAM } };
+      sel.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: KUNING } };
+      sel.border = { top: { style: 'medium', color: { argb: HITAM } } };
     }
-    ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 52 }, { wch: 14 }, { wch: 14 }, { wch: 14 }];
+    ws.getCell(rt, 4).alignment = { horizontal: 'right' };
+    ws.pageSetup = { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
 
-    // Lembar kedua: satu baris per barang yang terjual
-    var rinci = [['No. transaksi', 'Waktu', 'Barang', 'Jumlah', 'Harga (Rp)', 'Subtotal (Rp)']];
+    // ----- Lembar 2: Rincian barang -----
+    var ws2 = wb.addWorksheet('Rincian barang', { views: [{ state: 'frozen', ySplit: 1, showGridLines: false }] });
+    ws2.columns = [{ width: 15 }, { width: 19 }, { width: 30 }, { width: 10 }, { width: 16 }, { width: 16 }];
+    isi(ws2, 1, ['No. transaksi', 'Waktu', 'Barang', 'Jumlah', 'Harga (Rp)', 'Subtotal (Rp)']);
+    kepala(ws2, 1, 6, [4, 5, 6]);
+    var baris2 = 2;
     daftar.forEach(function (t) {
-      t.item.forEach(function (i) { rinci.push([t.id, serialExcel(t.waktu), i.nama, i.jumlah, i.harga, i.subtotal]); });
+      t.item.forEach(function (x) {
+        isi(ws2, baris2, [t.id, serialExcel(t.waktu), x.nama, x.jumlah, x.harga, x.subtotal]);
+        ws2.getCell(baris2, 1).alignment = { horizontal: 'left' };
+        ws2.getCell(baris2, 2).numFmt = FORMAT_WAKTU;
+        [5, 6].forEach(function (k) { ws2.getCell(baris2, k).numFmt = FORMAT_UANG; });
+        rapikan(ws2, baris2, 6, baris2 % 2 === 1);
+        baris2++;
+      });
     });
-    var ws2 = XLSX.utils.aoa_to_sheet(rinci);
-    for (var k = 2; k <= rinci.length; k++) {
-      ws2['B' + k].z = 'dd/mm/yyyy hh:mm';
-      ['E', 'F'].forEach(function (h) { ws2[h + k].z = '#,##0'; });
-    }
-    ws2['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 28 }, { wch: 9 }, { wch: 14 }, { wch: 14 }];
 
-    var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Laporan');
-    XLSX.utils.book_append_sheet(wb, ws2, 'Rincian barang');
-    XLSX.writeFile(wb, 'laporan-maduramart-' + periode + '.xlsx');
+    wb.xlsx.writeBuffer().then(function (buf) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+      a.download = 'laporan-maduramart-' + periode + '.xlsx';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    }).catch(function (galat) {
+      console.error(galat);
+      unduhCsv(daftar);
+      Shell.toast('File Excel gagal dibuat, file CSV diunduh.');
+    });
   }
 
   function cetakStruk() {
