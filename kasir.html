@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/dashboard.css?v=12">
-  <link rel="stylesheet" href="assets/css/kasir.css?v=12">
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=13">
+  <link rel="stylesheet" href="assets/css/kasir.css?v=13">
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol><symbol id="i-kasir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></symbol><symbol id="i-produk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol><symbol id="i-laporan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol><symbol id="i-atur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol><symbol id="i-keluar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></symbol><symbol id="i-cari" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol></svg>
@@ -22,7 +22,7 @@
       <nav class="nav" aria-label="Menu utama">
         <button class="item" type="button" data-ke="dashboard.html"><svg class="ikon" width="20" height="20"><use href="#i-home"/></svg>Dashboard</button>
         <button class="item aktif" type="button" aria-current="page"><svg class="ikon" width="20" height="20"><use href="#i-kasir"/></svg>Kasir</button>
-        <button class="item" type="button" data-segera="Produk"><svg class="ikon" width="20" height="20"><use href="#i-produk"/></svg>Produk</button>
+        <button class="item" type="button" data-ke="produk.html"><svg class="ikon" width="20" height="20"><use href="#i-produk"/></svg>Produk</button>
         <button class="item" type="button" data-segera="Laporan"><svg class="ikon" width="20" height="20"><use href="#i-laporan"/></svg>Laporan</button>
         <button class="item" type="button" data-segera="Pengaturan"><svg class="ikon" width="20" height="20"><use href="#i-atur"/></svg>Pengaturan</button>
       </nav>
@@ -55,7 +55,7 @@
             <h2>Keranjang<span id="jumlah">0 item</span></h2>
             <button class="teks-tombol" id="kosongkan" type="button" hidden>Kosongkan</button>
           </div>
-          <ul class="item" id="item"></ul>
+          <ul class="daftar-keranjang" id="item"></ul>
           <p class="kosong-teks" id="kosong-keranjang">Keranjang masih kosong. Pilih produk untuk menambahkannya.</p>
           <div class="keranjang-kaki">
             <div class="total-baris"><span>Total</span><strong id="total">Rp 0</strong></div>
@@ -111,8 +111,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/js/db.js?v=12"></script>
-  <script src="assets/js/shell.js?v=12"></script>
-  <script src="assets/js/kasir.js?v=12"></script>
+  <script src="assets/js/db.js?v=13"></script>
+  <script src="assets/js/shell.js?v=13"></script>
+  <script src="assets/js/kasir.js?v=13"></script>
 </body>
 </html>
