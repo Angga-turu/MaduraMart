@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/dashboard.css?v=17">
-  <link rel="stylesheet" href="assets/css/kasir.css?v=17">
-  <link rel="stylesheet" href="assets/css/laporan.css?v=17">
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=18">
+  <link rel="stylesheet" href="assets/css/kasir.css?v=18">
+  <link rel="stylesheet" href="assets/css/laporan.css?v=18">
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol><symbol id="i-kasir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></symbol><symbol id="i-produk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol><symbol id="i-laporan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol><symbol id="i-atur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol><symbol id="i-keluar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></symbol><symbol id="i-uang" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></symbol><symbol id="i-struk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol><symbol id="i-unduh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol><symbol id="i-cetak" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></symbol></svg>
@@ -23,9 +23,9 @@
       <nav class="nav" aria-label="Menu utama">
         <button class="item" type="button" data-ke="dashboard.html"><svg class="ikon" width="20" height="20"><use href="#i-home"/></svg>Dashboard</button>
         <button class="item" type="button" data-ke="kasir.html"><svg class="ikon" width="20" height="20"><use href="#i-kasir"/></svg>Kasir</button>
-        <button class="item" type="button" data-ke="produk.html"><svg class="ikon" width="20" height="20"><use href="#i-produk"/></svg>Produk</button>
+        <button class="item" type="button" data-ke="produk.html" data-admin><svg class="ikon" width="20" height="20"><use href="#i-produk"/></svg>Produk</button>
         <button class="item aktif" type="button" aria-current="page"><svg class="ikon" width="20" height="20"><use href="#i-laporan"/></svg>Laporan</button>
-        <button class="item" type="button" data-segera="Pengaturan"><svg class="ikon" width="20" height="20"><use href="#i-atur"/></svg>Pengaturan</button>
+        <button class="item" type="button" data-ke="pengaturan.html" data-admin><svg class="ikon" width="20" height="20"><use href="#i-atur"/></svg>Pengaturan</button>
       </nav>
       <button class="item keluar" id="keluar" type="button"><svg class="ikon" width="20" height="20"><use href="#i-keluar"/></svg>Keluar</button>
     </aside>
@@ -39,7 +39,7 @@
       </header>
 
       <main class="halaman-laporan">
-        <div class="kop-cetak"><h2>Laporan Penjualan MaduraMart</h2><p id="kop-periode"></p></div>
+        <div class="kop-cetak"><h2 id="kop-judul">Laporan Penjualan MaduraMart</h2><p id="kop-periode"></p></div>
         <div class="alat-laporan">
           <div class="kategori" role="group" aria-label="Pilih periode"><button class="chip-kat" type="button" data-periode="hari">Hari ini</button><button class="chip-kat aktif" type="button" data-periode="7">7 hari</button><button class="chip-kat" type="button" data-periode="30">30 hari</button><button class="chip-kat" type="button" data-periode="bulan">Bulan ini</button><button class="chip-kat" type="button" data-periode="semua">Semua</button></div>
           <div class="aksi-laporan">
@@ -85,12 +85,13 @@
 
   <dialog id="dlg-struk" aria-label="Struk pembayaran">
     <div class="kertas">
-      <h2>MaduraMart</h2>
+      <h2 id="s-toko">MaduraMart</h2>
+      <p class="meta" id="s-alamat" hidden></p>
       <p class="meta" id="s-tanggal"></p>
       <p class="meta" id="s-no"></p>
       <ul id="s-item"></ul>
       <ul id="s-jumlah"></ul>
-      <p class="terima">Terima kasih sudah berbelanja!</p>
+      <p class="terima" id="s-terima">Terima kasih sudah berbelanja!</p>
     </div>
     <div class="struk-aksi">
       <button class="tombol terang" id="cetak" type="button">Cetak</button>
@@ -101,8 +102,8 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-  <script src="assets/js/db.js?v=17"></script>
-  <script src="assets/js/shell.js?v=17"></script>
-  <script src="assets/js/laporan.js?v=17"></script>
+  <script src="assets/js/db.js?v=18"></script>
+  <script src="assets/js/shell.js?v=18"></script>
+  <script src="assets/js/laporan.js?v=18"></script>
 </body>
 </html>
