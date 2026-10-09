@@ -179,3 +179,5 @@ td.kanan { font-family: "Courier Prime", monospace; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   .samping, .toast { transition: none; }
 }
+
+[hidden] { display: none !important; }
