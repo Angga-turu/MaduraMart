@@ -193,7 +193,7 @@ button:disabled { opacity: 0.6; cursor: wait; }
     <p class="bantuan">Belum mempunyai akun? | <a href="https://wa.me/6287717682382" target="_blank" rel="noopener">Hubungi Admin!</a></p>
   </main>
 
-  <script src="assets/js/db.js?v=13"></script>
+  <script src="assets/js/db.js?v=14"></script>
   <script>
 (function () {
   var form = document.getElementById('form');
@@ -221,7 +221,7 @@ button:disabled { opacity: 0.6; cursor: wait; }
 
   // Datang dari dashboard berarti dashboard menolak sesinya.
   // Sesi direset supaya halaman tidak berpindah-pindah terus.
-  var dariDashboard = /dashboard|kasir|produk/.test(document.referrer) || /dari=/.test(window.location.search);
+  var dariDashboard = /dashboard|kasir|produk|laporan/.test(document.referrer) || /dari=/.test(window.location.search);
 
   // Pengguna yang masih punya sesi langsung diarahkan ke dashboard
   MaduraDB.siapkan().then(function () {
