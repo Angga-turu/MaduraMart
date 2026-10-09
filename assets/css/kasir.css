@@ -46,14 +46,14 @@
 .teks-tombol { padding: 4px 8px; font-weight: 600; color: var(--bahaya); background: transparent; border: 0; border-radius: 6px; }
 .teks-tombol:hover { background: #fde4e0; }
 
-.item { flex: 1; margin: 0; padding: 6px 18px; overflow-y: auto; list-style: none; }
-.item li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 0; border-bottom: 1px solid var(--garis); }
-.item li:last-child { border-bottom: 0; }
-.item .info { display: flex; flex-direction: column; min-width: 0; }
-.item .info span { font-size: 13px; color: var(--samar); }
-.item .atur { display: flex; align-items: center; gap: 8px; }
-.item .atur b { min-width: 22px; text-align: center; }
-.item .sub { grid-column: 1 / -1; font-family: "Courier Prime", monospace; }
+.daftar-keranjang { flex: 1; margin: 0; padding: 6px 18px; overflow-y: auto; list-style: none; }
+.daftar-keranjang li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 0; border-bottom: 1px solid var(--garis); }
+.daftar-keranjang li:last-child { border-bottom: 0; }
+.daftar-keranjang .info { display: flex; flex-direction: column; min-width: 0; }
+.daftar-keranjang .info span { font-size: 13px; color: var(--samar); }
+.daftar-keranjang .atur { display: flex; align-items: center; gap: 8px; }
+.daftar-keranjang .atur b { min-width: 22px; text-align: center; }
+.daftar-keranjang .sub { grid-column: 1 / -1; font-family: "Courier Prime", monospace; }
 .qty { width: 30px; height: 30px; font-weight: 700; color: var(--tinta); background: var(--latar); border: 0; border-radius: 8px; }
 .qty:hover { background: var(--kuning); }
 .kosong-teks { margin: 0; padding: 28px 18px; text-align: center; color: var(--samar); }

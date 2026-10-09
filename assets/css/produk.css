@@ -1,0 +1,36 @@
+.halaman { display: grid; gap: 16px; padding: 24px 28px 40px; }
+
+.alat-produk { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.alat-produk .cari { position: relative; flex: 1; min-width: 220px; }
+.alat-produk .cari .ikon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--samar); pointer-events: none; }
+.alat-produk .cari input { width: 100%; padding: 12px 14px 12px 44px; font: inherit; color: var(--tinta); background: #fff; border: 1px solid var(--garis); border-radius: 12px; }
+.pilih { padding: 12px 14px; font: inherit; color: var(--tinta); background: #fff; border: 1px solid var(--garis); border-radius: 12px; }
+.alat-produk input:focus-visible, .pilih:focus-visible, .medan input:focus-visible { outline: 3px solid var(--aksen); outline-offset: 1px; }
+
+.kartu-tabel { padding: 0; overflow: hidden; }
+.kartu-tabel .kepala { margin: 0; padding: 18px 20px 12px; }
+.kartu-tabel .kepala span { font-family: inherit; font-weight: 400; color: var(--samar); }
+.tabel-produk tbody tr:hover td { background: #faf9f4; }
+.tabel-produk th:first-child, .tabel-produk td:first-child { padding-left: 20px; }
+.tabel-produk th:last-child, .tabel-produk td:last-child { padding-right: 20px; }
+.tabel-produk .angka { text-align: right; }
+.tabel-produk td.angka { font-family: "Courier Prime", monospace; font-weight: 700; }
+.lencana-kat { padding: 2px 10px; font-size: 13px; background: var(--latar); border-radius: 99px; }
+.status-stok { margin-left: 8px; padding: 1px 9px; font-size: 12px; font-weight: 700; border-radius: 99px; }
+.status-stok.tipis { color: var(--bahaya); background: #fde4e0; }
+.aksi-sel { text-align: right; white-space: nowrap; }
+.ikon-tombol { width: 34px; height: 34px; margin-left: 6px; display: inline-grid; place-items: center; color: var(--tinta); background: var(--latar); border: 0; border-radius: 8px; }
+.ikon-tombol:hover { background: var(--kuning); }
+.ikon-tombol.bahaya:hover { color: var(--bahaya); background: #fde4e0; }
+.kartu-tabel .kosong-teks { margin: 0; padding: 28px 20px; text-align: center; color: var(--samar); }
+
+.medan { margin-bottom: 14px; }
+.medan label { display: block; margin-bottom: 4px; font-weight: 600; }
+.medan input { width: 100%; padding: 11px 13px; font: inherit; color: var(--tinta); background: #fff; border: 2px solid var(--tinta); border-radius: 10px; }
+.baris-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.galat-form { margin: 0 0 12px; color: var(--bahaya); font-size: 14px; }
+.tombol.bahaya { color: #fff; background: var(--bahaya); border-color: var(--bahaya); }
+.tombol.bahaya:hover { filter: brightness(0.92); }
+
+@media (max-width: 900px) { .halaman { padding: 16px 16px 32px; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
