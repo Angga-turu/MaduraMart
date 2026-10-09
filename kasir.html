@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kasir - MaduraMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=12">
+  <link rel="stylesheet" href="assets/css/kasir.css?v=12">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol><symbol id="i-kasir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></symbol><symbol id="i-produk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol><symbol id="i-laporan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol><symbol id="i-atur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol><symbol id="i-keluar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></symbol><symbol id="i-cari" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol></svg>
+
+  <div class="app" id="app" hidden>
+    <aside class="samping" id="samping">
+      <div class="profil">
+        <div class="avatar" id="avatar" aria-hidden="true"></div>
+        <div class="profil-teks"><strong id="pengguna"></strong><span>Administrator</span></div>
+      </div>
+      <nav class="nav" aria-label="Menu utama">
+        <button class="item" type="button" data-ke="dashboard.html"><svg class="ikon" width="20" height="20"><use href="#i-home"/></svg>Dashboard</button>
+        <button class="item aktif" type="button" aria-current="page"><svg class="ikon" width="20" height="20"><use href="#i-kasir"/></svg>Kasir</button>
+        <button class="item" type="button" data-segera="Produk"><svg class="ikon" width="20" height="20"><use href="#i-produk"/></svg>Produk</button>
+        <button class="item" type="button" data-segera="Laporan"><svg class="ikon" width="20" height="20"><use href="#i-laporan"/></svg>Laporan</button>
+        <button class="item" type="button" data-segera="Pengaturan"><svg class="ikon" width="20" height="20"><use href="#i-atur"/></svg>Pengaturan</button>
+      </nav>
+      <button class="item keluar" id="keluar" type="button"><svg class="ikon" width="20" height="20"><use href="#i-keluar"/></svg>Keluar</button>
+    </aside>
+    <div class="tirai" id="tirai"></div>
+
+    <div class="utama">
+      <header class="bar">
+        <button class="hamburger" id="buka" type="button" aria-label="Buka menu"><svg class="ikon" width="22" height="22"><use href="#i-menu"/></svg></button>
+        <h1 class="judul">Kasir</h1>
+        <div class="waktu"><span id="tanggal"></span><b id="jam"></b></div>
+      </header>
+
+      <main class="kasir">
+        <section class="katalog" aria-label="Daftar produk">
+          <div class="alat">
+            <div class="cari">
+              <svg class="ikon" width="20" height="20"><use href="#i-cari"/></svg>
+              <input id="cari" type="search" placeholder="Cari produk" aria-label="Cari produk" autocomplete="off">
+            </div>
+            <div class="kategori" id="kategori"></div>
+          </div>
+          <div class="grid-produk" id="produk"></div>
+          <p class="kosong-teks" id="kosong-produk" hidden>Belum ada produk.</p>
+        </section>
+
+        <section class="keranjang" aria-label="Keranjang">
+          <div class="keranjang-kepala">
+            <h2>Keranjang<span id="jumlah">0 item</span></h2>
+            <button class="teks-tombol" id="kosongkan" type="button" hidden>Kosongkan</button>
+          </div>
+          <ul class="item" id="item"></ul>
+          <p class="kosong-teks" id="kosong-keranjang">Keranjang masih kosong. Pilih produk untuk menambahkannya.</p>
+          <div class="keranjang-kaki">
+            <div class="total-baris"><span>Total</span><strong id="total">Rp 0</strong></div>
+            <button class="tombol kuning besar" id="bayar-tombol" type="button" disabled>Bayar</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="bar-bawah" id="bar-bawah">
+    <div><span id="bawah-info">0 item</span><strong id="bawah-total">Rp 0</strong></div>
+    <button class="tombol kuning" id="bawah-bayar" type="button" disabled>Bayar</button>
+  </div>
+
+  <dialog id="dlg-bayar" aria-labelledby="judul-bayar">
+    <div class="dlg">
+      <h2 id="judul-bayar">Pembayaran tunai</h2>
+      <p class="lihat">Total yang harus dibayar</p>
+      <p class="besar-angka" id="b-total">Rp 0</p>
+      <div class="uang-input">
+        <label for="uang">Uang diterima</label>
+        <input id="uang" type="number" inputmode="numeric" min="0" step="500" placeholder="0">
+      </div>
+      <div class="cepat">
+        <button type="button" data-uang="pas">Uang pas</button>
+        <button type="button" data-uang="20000">20.000</button>
+        <button type="button" data-uang="50000">50.000</button>
+        <button type="button" data-uang="100000">100.000</button>
+      </div>
+      <div class="hasil"><span id="kembali-label">Kembalian</span><strong id="kembali">Rp 0</strong></div>
+      <div class="dlg-aksi">
+        <button class="tombol terang" id="batal" type="button">Batal</button>
+        <button class="tombol gelap" id="selesai" type="button" disabled>Selesaikan</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-struk" aria-label="Struk pembayaran">
+    <div class="kertas">
+      <h2>MaduraMart</h2>
+      <p class="meta" id="s-tanggal"></p>
+      <p class="meta" id="s-no"></p>
+      <ul id="s-item"></ul>
+      <ul id="s-jumlah"></ul>
+      <p class="terima">Terima kasih sudah berbelanja!</p>
+    </div>
+    <div class="struk-aksi">
+      <button class="tombol terang" id="cetak" type="button">Cetak</button>
+      <button class="tombol gelap" id="tutup-struk" type="button">Transaksi baru</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/js/db.js?v=12"></script>
+  <script src="assets/js/shell.js?v=12"></script>
+  <script src="assets/js/kasir.js?v=12"></script>
+</body>
+</html>
