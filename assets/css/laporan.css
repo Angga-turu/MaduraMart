@@ -1,0 +1,43 @@
+.halaman-laporan { display: grid; gap: 20px; padding: 24px 28px 40px; }
+
+.alat-laporan { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.alat-laporan .kategori { margin: 0; }
+.aksi-laporan { display: flex; flex-wrap: wrap; gap: 10px; }
+.aksi-laporan .tombol:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.grafik.rapat { gap: 3px; }
+.grafik.rapat .batang { max-width: none; border-radius: 3px 3px 0 0; }
+.grafik .hari { font-size: 11px; white-space: nowrap; }
+
+.terlaris { margin: 0; padding: 0; list-style: none; }
+.terlaris li { padding: 9px 0; border-bottom: 1px solid var(--garis); }
+.terlaris li:last-child { border-bottom: 0; }
+.terlaris .baris-atas { display: flex; justify-content: space-between; gap: 10px; }
+.terlaris .jml { color: var(--samar); font-size: 13px; white-space: nowrap; }
+.terlaris .jalur { height: 6px; margin-top: 6px; background: var(--latar); border-radius: 99px; overflow: hidden; }
+.terlaris .jalur i { display: block; height: 100%; background: var(--kuning); box-shadow: inset 0 0 0 1px var(--tinta); border-radius: 99px; }
+.terlaris .omzet { font-family: "Courier Prime", monospace; font-weight: 700; font-size: 13px; }
+
+.kartu-tabel { padding: 0; overflow: hidden; }
+.kartu-tabel .kepala { margin: 0; padding: 18px 20px 12px; }
+.kartu-tabel .kepala span { font-family: inherit; font-weight: 400; color: var(--samar); }
+.tabel-lap th:first-child, .tabel-lap td:first-child { padding-left: 20px; }
+.tabel-lap th:last-child, .tabel-lap td:last-child { padding-right: 20px; text-align: right; }
+.tabel-lap .num { text-align: right; }
+.tabel-lap td.num { font-family: "Courier Prime", monospace; font-weight: 700; }
+.tabel-lap tbody tr:hover td { background: #faf9f4; }
+.kartu-tabel .kosong-teks { margin: 0; padding: 28px 20px; text-align: center; color: var(--samar); }
+.teks-kecil { padding: 5px 12px; font-weight: 600; color: var(--tinta); background: var(--latar); border: 0; border-radius: 8px; }
+.teks-kecil:hover { background: var(--kuning); }
+.lainnya { display: block; width: calc(100% - 40px); margin: 12px 20px 18px; padding: 9px; font-weight: 600; color: var(--tinta); background: transparent; border: 2px dashed var(--garis); border-radius: 10px; }
+.lainnya:hover { border-color: var(--tinta); }
+
+@media (max-width: 900px) { .halaman-laporan { padding: 16px 16px 32px; } }
+
+/* Cetak laporan: tanpa menu samping dan tombol */
+@media print {
+  .samping, .bar, .alat-laporan, .bar-bawah, .toast, .lainnya { display: none !important; }
+  .app { display: block; }
+  .halaman-laporan { padding: 0; }
+  body { background: #fff; }
+}

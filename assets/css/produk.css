@@ -34,3 +34,7 @@
 
 @media (max-width: 900px) { .halaman { padding: 16px 16px 32px; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Timpa gaya angka besar milik kartu ringkasan agar tidak ikut ke tabel */
+.tabel-produk th.angka { margin: 0; font-family: inherit; font-size: 13px; font-weight: 600; }
+.tabel-produk td.angka { margin: 0; font-size: 15px; }
