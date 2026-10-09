@@ -1,6 +1,6 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var semuaTrx = [], periode = '7', semuaRiwayat = false;
+  var pengaturanToko = null, semuaTrx = [], periode = '7', semuaRiwayat = false;
   var NAMA = { hari: 'Hari ini', '7': '7 hari terakhir', '30': '30 hari terakhir', bulan: 'Bulan ini', semua: 'Semua waktu' };
   var BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
@@ -79,6 +79,7 @@
     $('k-rata').textContent = rupiah(daftar.length ? Math.round(omzet / daftar.length) : 0);
     $('k-barang').textContent = barang;
     $('nama-periode').textContent = NAMA[periode];
+    $('kop-judul').textContent = 'Laporan Penjualan ' + ((pengaturanToko && pengaturanToko.nama_aplikasi) || 'MaduraMart');
     $('kop-periode').textContent = 'Periode: ' + NAMA[periode] + ' | Dicetak: ' + waktuLokal(new Date().toISOString(), true);
     $('unduh').disabled = daftar.length === 0;
 
@@ -162,6 +163,12 @@
   }
 
   function tampilStruk(t) {
+    var toko = pengaturanToko || {};
+    $('s-toko').textContent = toko.nama_aplikasi || 'MaduraMart';
+    var alamat = [toko.alamat, toko.telepon ? 'Telp. ' + toko.telepon : ''].filter(Boolean).join(' | ');
+    $('s-alamat').textContent = alamat;
+    $('s-alamat').hidden = !alamat;
+    $('s-terima').textContent = toko.pesan_struk || 'Terima kasih sudah berbelanja!';
     $('s-tanggal').textContent = waktuLokal(t.waktu, true);
     $('s-no').textContent = 'No. ' + t.id + ' | Kasir: ' + t.kasir;
     var ul = $('s-item');
@@ -229,20 +236,20 @@
     }
 
     var wb = new ExcelJS.Workbook();
-    wb.creator = 'MaduraMart';
+    wb.creator = (pengaturanToko && pengaturanToko.nama_aplikasi) || 'MaduraMart';
 
     // ----- Lembar 1: Laporan -----
     var n = daftar.length, awal = 5, akhir = 4 + n;
     var ws = wb.addWorksheet('Laporan', { views: [{ state: 'frozen', ySplit: 4, showGridLines: false }] });
     ws.columns = [{ width: 6 }, { width: 19 }, { width: 12 }, { width: 52 }, { width: 16 }, { width: 16 }, { width: 16 }];
     ws.mergeCells('A1:G1');
-    ws.getCell('A1').value = 'Laporan Penjualan MaduraMart';
+    ws.getCell('A1').value = 'Laporan Penjualan ' + ((pengaturanToko && pengaturanToko.nama_aplikasi) || 'MaduraMart');
     ws.getCell('A1').font = { bold: true, size: 18, color: { argb: HITAM } };
     ws.mergeCells('A2:G2');
     ws.getCell('A2').value = 'Periode: ' + NAMA[periode] + ' | Dicetak: ' + waktuLokal(new Date().toISOString(), true);
     ws.getCell('A2').font = { color: { argb: SAMAR } };
     isi(ws, 4, ['No', 'Waktu', 'Kasir', 'Barang', 'Total (Rp)', 'Tunai (Rp)', 'Kembali (Rp)']);
-    kepala(ws, 4, 7, [1, 5, 6, 7]);
+    kepala(ws, 4, 7, [5, 6, 7]);
 
     var jumlah = { total: 0, bayar: 0, kembali: 0 };
     daftar.forEach(function (t, i) {
@@ -251,6 +258,7 @@
       isi(ws, r, [t.id, serialExcel(t.waktu), t.kasir, t.item.map(function (x) { return x.nama + ' x' + x.jumlah; }).join(', '), t.total, t.bayar, t.kembali]);
       ws.getCell(r, 1).alignment = { horizontal: 'left' };
       ws.getCell(r, 2).numFmt = FORMAT_WAKTU;
+      ws.getCell(r, 2).alignment = { horizontal: 'left' };
       [5, 6, 7].forEach(function (k) { ws.getCell(r, k).numFmt = FORMAT_UANG; });
       rapikan(ws, r, 7, i % 2 === 1);
     });
@@ -281,6 +289,7 @@
         isi(ws2, baris2, [t.id, serialExcel(t.waktu), x.nama, x.jumlah, x.harga, x.subtotal]);
         ws2.getCell(baris2, 1).alignment = { horizontal: 'left' };
         ws2.getCell(baris2, 2).numFmt = FORMAT_WAKTU;
+        ws2.getCell(baris2, 2).alignment = { horizontal: 'left' };
         [5, 6].forEach(function (k) { ws2.getCell(baris2, k).numFmt = FORMAT_UANG; });
         rapikan(ws2, baris2, 6, baris2 % 2 === 1);
         baris2++;
@@ -324,9 +333,11 @@
   $('cetak').addEventListener('click', cetakStruk);
   $('tutup-struk').addEventListener('click', function () { $('dlg-struk').close(); });
 
-  Shell.mulai('laporan').then(function (s) {
+  Shell.mulai('laporan', true).then(function (s) {
     if (!s) return;
-    return MaduraDB.semua('transaksi').then(function (d) { semuaTrx = d; gambar(); });
+    return MaduraDB.pengaturan().then(function (p) { pengaturanToko = p; }).then(function () {
+      return MaduraDB.semua('transaksi');
+    }).then(function (d) { semuaTrx = d; gambar(); });
   }).catch(function (g) {
     console.error(g);
     Shell.toast('Data laporan belum bisa dimuat. Coba muat ulang halaman.');

@@ -27,7 +27,7 @@ var Shell = (function () {
   }
 
   // Memeriksa login. Mengembalikan data sesi, atau null jika pengguna dikirim ke halaman login.
-  function mulai(namaHalaman) {
+  function mulai(namaHalaman, hanyaAdmin) {
     $('buka').addEventListener('click', function () { laci(true); });
     $('tirai').addEventListener('click', function () { laci(false); });
     semua('[data-segera]', function (b) {
@@ -44,6 +44,11 @@ var Shell = (function () {
       return MaduraDB.sesiAktif();
     }).then(function (sesi) {
       if (!sesi) { window.location.replace('login.html?dari=' + namaHalaman); return null; }
+      var admin = sesi.peran === 'admin';
+      semua('[data-admin]', function (b) { b.hidden = !admin; });
+      var label = document.querySelector('.profil-teks span');
+      if (label) label.textContent = admin ? 'Administrator' : 'Kasir';
+      if (hanyaAdmin && !admin) { window.location.replace('dashboard.html'); return null; }
       $('pengguna').textContent = sesi.username;
       $('avatar').textContent = sesi.username.charAt(0).toUpperCase();
       jam();

@@ -128,6 +128,10 @@
 
     $('pengguna').textContent = sesi.username;
     $('avatar').textContent = sesi.username.charAt(0).toUpperCase();
+    var admin = sesi.peran === 'admin';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-admin]'), function (b) { b.hidden = !admin; });
+    var label = document.querySelector('.profil-teks span');
+    if (label) label.textContent = admin ? 'Administrator' : 'Kasir';
     $('sapaan').textContent = sapa(sesi.username);
     jam();
     setInterval(jam, 30000);

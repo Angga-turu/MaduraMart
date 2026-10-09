@@ -1,6 +1,6 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var produk = [], peta = {}, keranjang = {}, kategori = 'Semua', cari = '', sesi = null;
+  var pengaturanToko = null, produk = [], peta = {}, keranjang = {}, kategori = 'Semua', cari = '', sesi = null;
 
   function rupiah(n) { return 'Rp ' + new Intl.NumberFormat('id-ID').format(n || 0); }
   function el(tag, teks, kelas) {
@@ -149,6 +149,12 @@
   }
 
   function tampilStruk(rec) {
+    var toko = pengaturanToko || {};
+    $('s-toko').textContent = toko.nama_aplikasi || 'MaduraMart';
+    var alamat = [toko.alamat, toko.telepon ? 'Telp. ' + toko.telepon : ''].filter(Boolean).join(' | ');
+    $('s-alamat').textContent = alamat;
+    $('s-alamat').hidden = !alamat;
+    $('s-terima').textContent = toko.pesan_struk || 'Terima kasih sudah berbelanja!';
     $('s-tanggal').textContent = new Date(rec.waktu).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     $('s-no').textContent = 'No. ' + rec.id + ' | Kasir: ' + rec.kasir;
     var ul = $('s-item');
@@ -195,7 +201,7 @@
   Shell.mulai('kasir').then(function (s) {
     if (!s) return;
     sesi = s;
-    return muat();
+    return MaduraDB.pengaturan().then(function (p) { pengaturanToko = p; }).then(muat);
   }).catch(function (galat) {
     console.error(galat);
     Shell.toast('Data produk belum bisa dimuat. Coba muat ulang halaman.');

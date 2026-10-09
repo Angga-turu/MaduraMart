@@ -134,7 +134,7 @@
   $('batal-hapus').addEventListener('click', function () { $('dlg-hapus').close(); });
   $('ya-hapus').addEventListener('click', konfirmasiHapus);
 
-  Shell.mulai('produk').then(function (s) {
+  Shell.mulai('produk', true).then(function (s) {
     if (s) return muat();
   }).catch(function (g) {
     console.error(g);

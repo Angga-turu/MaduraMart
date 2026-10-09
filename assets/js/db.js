@@ -113,6 +113,108 @@ var MaduraDB = (function () {
     });
   }
 
+  var TABEL_DATA = ['pengaturan', 'pengguna', 'produk', 'transaksi'];
+
+  function pengaturan() { return ambil('pengaturan', 1); }
+
+  function simpanPengaturan(data) {
+    return ambil('pengaturan', 1).then(function (p) {
+      return simpan('pengaturan', Object.assign({}, p, data, { id: 1 }));
+    });
+  }
+
+  function cekSandi(sandi) {
+    if (String(sandi || '').length < 6) throw new Error('Kata sandi minimal 6 karakter.');
+  }
+
+  // Daftar pengguna tanpa hash sandi
+  function daftarPengguna() {
+    return semua('pengguna').then(function (l) {
+      return l.map(function (u) { return { username: u.username, peran: u.peran || 'kasir', dibuat_pada: u.dibuat_pada || null }; });
+    });
+  }
+
+  function tambahPengguna(username, sandi, peran) {
+    return Promise.resolve().then(function () {
+      username = String(username || '').trim().toLowerCase();
+      if (!/^[a-z0-9_]{3,20}$/.test(username)) throw new Error('Nama pengguna 3 sampai 20 karakter: huruf kecil, angka, atau garis bawah.');
+      cekSandi(sandi);
+      if (peran !== 'admin' && peran !== 'kasir') throw new Error('Peran tidak valid.');
+      return ambil('pengguna', username);
+    }).then(function (ada) {
+      if (ada) throw new Error('Nama pengguna sudah dipakai.');
+      return hash(username, sandi);
+    }).then(function (h) {
+      return simpan('pengguna', { username: username, sandi_hash: h, peran: peran, dibuat_pada: new Date().toISOString() });
+    });
+  }
+
+  function aturSandi(username, sandiBaru) {
+    return Promise.resolve().then(function () {
+      cekSandi(sandiBaru);
+      return Promise.all([ambil('pengguna', username), hash(username, sandiBaru)]);
+    }).then(function (r) {
+      if (!r[0]) throw new Error('Pengguna tidak ditemukan.');
+      r[0].sandi_hash = r[1];
+      return simpan('pengguna', r[0]);
+    });
+  }
+
+  function gantiSandi(username, lama, baru) {
+    return Promise.all([ambil('pengguna', username), hash(username, lama)]).then(function (r) {
+      if (!r[0] || r[0].sandi_hash !== r[1]) throw new Error('Kata sandi lama salah.');
+      return aturSandi(username, baru);
+    });
+  }
+
+  function hapusPengguna(username) {
+    return semua('pengguna').then(function (l) {
+      var u = l.filter(function (x) { return x.username === username; })[0];
+      if (!u) return;
+      var jumlahAdmin = l.filter(function (x) { return x.peran === 'admin'; }).length;
+      if (u.peran === 'admin' && jumlahAdmin <= 1) throw new Error('Admin terakhir tidak bisa dihapus.');
+      return hapus('pengguna', username);
+    });
+  }
+
+  function kosongkan(tabel) {
+    return new Promise(function (selesai, gagal) {
+      var tx = koneksi.transaction(tabel, 'readwrite');
+      tabel.forEach(function (t) { tx.objectStore(t).clear(); });
+      tx.oncomplete = function () { selesai(); };
+      tx.onerror = function () { gagal(tx.error); };
+    });
+  }
+  function hapusTransaksi() { return kosongkan(['transaksi']); }
+  // Mengosongkan semuanya; saat aplikasi dibuka lagi, data awal diisi ulang otomatis
+  function resetSemua() { return kosongkan(['pengaturan', 'pengguna', 'produk', 'transaksi', 'sesi']); }
+
+  function ekspor() {
+    return Promise.all(TABEL_DATA.map(semua)).then(function (h) {
+      var o = { aplikasi: 'MaduraMart', versi: 1, dibuat: new Date().toISOString(), data: {} };
+      TABEL_DATA.forEach(function (t, i) { o.data[t] = h[i]; });
+      return o;
+    });
+  }
+
+  function impor(o) {
+    return Promise.resolve().then(function () {
+      if (!o || o.aplikasi !== 'MaduraMart' || !o.data) throw new Error('File ini bukan cadangan MaduraMart.');
+      TABEL_DATA.forEach(function (t) { if (!Array.isArray(o.data[t])) throw new Error('Isi cadangan tidak lengkap.'); });
+      if (!o.data.pengguna.some(function (u) { return u.peran === 'admin' && u.username && u.sandi_hash; })) throw new Error('Cadangan tidak berisi akun admin.');
+      return new Promise(function (selesai, gagal) {
+        var tx = koneksi.transaction(TABEL_DATA, 'readwrite');
+        TABEL_DATA.forEach(function (t) {
+          var tabel = tx.objectStore(t);
+          tabel.clear();
+          o.data[t].forEach(function (r) { tabel.put(r); });
+        });
+        tx.oncomplete = function () { selesai(); };
+        tx.onabort = tx.onerror = function () { gagal(tx.error || new Error('Cadangan gagal dipulihkan.')); };
+      });
+    });
+  }
+
   // Menambah produk baru (tanpa id) atau mengubah produk (dengan id)
   function simpanProduk(produk) {
     return new Promise(function (selesai, gagal) {
@@ -174,11 +276,16 @@ var MaduraDB = (function () {
   function sesiAktif() {
     return ambil('sesi', 1).then(function (sesi) {
       if (!sesi) return null;
-      return ambil('pengguna', sesi.username).then(function (u) { return u ? sesi : null; });
+      return ambil('pengguna', sesi.username).then(function (u) {
+        return u ? Object.assign({}, sesi, { peran: u.peran || 'kasir' }) : null;
+      });
     });
   }
 
   function keluar() { return hapus('sesi', 1); }
 
-  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk };
+  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk,
+    pengaturan: pengaturan, simpanPengaturan: simpanPengaturan, daftarPengguna: daftarPengguna, tambahPengguna: tambahPengguna,
+    aturSandi: aturSandi, gantiSandi: gantiSandi, hapusPengguna: hapusPengguna, hapusTransaksi: hapusTransaksi,
+    resetSemua: resetSemua, ekspor: ekspor, impor: impor };
 })();
