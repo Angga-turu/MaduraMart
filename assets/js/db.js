@@ -113,6 +113,20 @@ var MaduraDB = (function () {
     });
   }
 
+  // Nama tampilan dan foto profil milik satu pengguna (foto: data URL, '' untuk menghapus, undefined = tidak diubah)
+  function simpanProfil(username, data) {
+    return Promise.resolve().then(function () {
+      var nama = String(data.nama_tampilan || '').trim();
+      if (nama.length > 30) throw new Error('Nama tampilan maksimal 30 karakter.');
+      return ambil('pengguna', username).then(function (u) {
+        if (!u) throw new Error('Pengguna tidak ditemukan.');
+        u.nama_tampilan = nama;
+        if (data.foto !== undefined) u.foto = data.foto || '';
+        return simpan('pengguna', u);
+      });
+    });
+  }
+
   var TABEL_DATA = ['pengaturan', 'pengguna', 'produk', 'transaksi'];
 
   function pengaturan() { return ambil('pengaturan', 1); }
@@ -277,14 +291,14 @@ var MaduraDB = (function () {
     return ambil('sesi', 1).then(function (sesi) {
       if (!sesi) return null;
       return ambil('pengguna', sesi.username).then(function (u) {
-        return u ? Object.assign({}, sesi, { peran: u.peran || 'kasir' }) : null;
+        return u ? Object.assign({}, sesi, { peran: u.peran || 'kasir', nama_tampilan: u.nama_tampilan || '', foto: u.foto || '' }) : null;
       });
     });
   }
 
   function keluar() { return hapus('sesi', 1); }
 
-  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk,
+  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk, simpanProfil: simpanProfil,
     pengaturan: pengaturan, simpanPengaturan: simpanPengaturan, daftarPengguna: daftarPengguna, tambahPengguna: tambahPengguna,
     aturSandi: aturSandi, gantiSandi: gantiSandi, hapusPengguna: hapusPengguna, hapusTransaksi: hapusTransaksi,
     resetSemua: resetSemua, ekspor: ekspor, impor: impor };

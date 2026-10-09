@@ -126,13 +126,12 @@
     // Hanya jika memang belum login, pengguna dikirim ke halaman login
     if (!sesi) { window.location.replace('login.html?dari=dashboard'); return; }
 
-    $('pengguna').textContent = sesi.username;
-    $('avatar').textContent = sesi.username.charAt(0).toUpperCase();
+    Shell.profil(sesi, function (s) { $('sapaan').textContent = sapa(s.nama_tampilan || s.username); });
     var admin = sesi.peran === 'admin';
     Array.prototype.forEach.call(document.querySelectorAll('[data-admin]'), function (b) { b.hidden = !admin; });
     var label = document.querySelector('.profil-teks span');
     if (label) label.textContent = admin ? 'Administrator' : 'Kasir';
-    $('sapaan').textContent = sapa(sesi.username);
+    $('sapaan').textContent = sapa(sesi.nama_tampilan || sesi.username);
     jam();
     setInterval(jam, 30000);
     $('app').hidden = false;
