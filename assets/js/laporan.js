@@ -79,6 +79,7 @@
     $('k-rata').textContent = rupiah(daftar.length ? Math.round(omzet / daftar.length) : 0);
     $('k-barang').textContent = barang;
     $('nama-periode').textContent = NAMA[periode];
+    $('kop-periode').textContent = 'Periode: ' + NAMA[periode] + ' | Dicetak: ' + waktuLokal(new Date().toISOString(), true);
     $('unduh').disabled = daftar.length === 0;
 
     // Grafik
@@ -198,6 +199,15 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
 
+  function cetakStruk() {
+    document.body.classList.add('cetak-struk');
+    window.addEventListener('afterprint', function lepas() {
+      document.body.classList.remove('cetak-struk');
+      window.removeEventListener('afterprint', lepas);
+    });
+    window.print();
+  }
+
   // ---------- Tombol ----------
   Array.prototype.forEach.call(document.querySelectorAll('[data-periode]'), function (b) {
     b.addEventListener('click', function () {
@@ -210,7 +220,7 @@
   $('lainnya').addEventListener('click', function () { semuaRiwayat = !semuaRiwayat; gambar(); });
   $('unduh').addEventListener('click', unduh);
   $('cetak-lap').addEventListener('click', function () { window.print(); });
-  $('cetak').addEventListener('click', function () { window.print(); });
+  $('cetak').addEventListener('click', cetakStruk);
   $('tutup-struk').addEventListener('click', function () { $('dlg-struk').close(); });
 
   Shell.mulai('laporan').then(function (s) {

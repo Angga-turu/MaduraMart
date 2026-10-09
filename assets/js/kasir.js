@@ -165,6 +165,15 @@
     $('dlg-struk').showModal();
   }
 
+  function cetakStruk() {
+    document.body.classList.add('cetak-struk');
+    window.addEventListener('afterprint', function lepas() {
+      document.body.classList.remove('cetak-struk');
+      window.removeEventListener('afterprint', lepas);
+    });
+    window.print();
+  }
+
   // ---------- Pasang tombol ----------
   $('cari').addEventListener('input', function () { cari = this.value.trim().toLowerCase(); gambarProduk(); });
   $('kosongkan').addEventListener('click', function () { keranjang = {}; gambarProduk(); gambarKeranjang(); });
@@ -174,7 +183,7 @@
   $('selesai').addEventListener('click', selesaikan);
   $('batal').addEventListener('click', function () { $('dlg-bayar').close(); });
   $('tutup-struk').addEventListener('click', function () { $('dlg-struk').close(); });
-  $('cetak').addEventListener('click', function () { window.print(); });
+  $('cetak').addEventListener('click', cetakStruk);
   Array.prototype.forEach.call(document.querySelectorAll('[data-uang]'), function (b) {
     b.addEventListener('click', function () {
       var v = b.getAttribute('data-uang');
