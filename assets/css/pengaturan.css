@@ -23,3 +23,6 @@
 .medan input[type="file"] { padding: 8px; border-width: 1px; }
 
 @media (max-width: 900px) { .halaman-atur { padding: 16px 16px 32px; } }
+
+.panel .pilih.pilih-kecil { width: auto; padding: 6px 10px; }
+.email-kecil { font-size: 12px; font-weight: 400; color: var(--samar); }
