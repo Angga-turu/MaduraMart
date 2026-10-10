@@ -105,14 +105,21 @@ var Shell = (function () {
     var av = $('pf-avatar');
     av.style.backgroundImage = foto ? 'url("' + foto + '")' : '';
     av.textContent = foto ? '' : ($('pf-nama').value.trim() || sesiProfil.username).charAt(0).toUpperCase();
-    $('pf-hapus-foto').hidden = !foto;
+    $('pf-hapus-foto').hidden = !foto || !!sesiProfil.google;
   }
 
   function bukaProfil() {
     fotoBaru = undefined;
     $('pf-nama').value = sesiProfil.nama_tampilan || '';
     $('pf-nama').placeholder = sesiProfil.username;
-    $('pf-username').textContent = sesiProfil.username;
+    var google = !!sesiProfil.google;
+    $('pf-lab').textContent = google ? 'Email' : 'Nama pengguna';
+    $('pf-username').textContent = google ? (sesiProfil.email || 'Akun Google') : sesiProfil.username;
+    $('pf-ubah').hidden = google;
+    $('pf-nama').disabled = google;
+    $('pf-simpan').hidden = google;
+    $('pf-google').hidden = !google;
+    $('pf-batal').textContent = google ? 'Tutup' : 'Batal';
     $('pf-peran').textContent = sesiProfil.peran === 'admin' ? 'Administrator' : 'Kasir';
     galatProfil('');
     pratinjau();
@@ -141,12 +148,13 @@ var Shell = (function () {
             '<input type="file" id="pf-berkas" accept="image/*" hidden>' +
           '</div></div>' +
         '<p class="pf-bantu">Foto dipotong persegi, dikecilkan, dan disimpan di browser ini.</p>' +
+        '<p class="pf-bantu" id="pf-google" hidden>Nama dan foto diambil dari akun Google dan diperbarui setiap kali kamu masuk.</p>' +
         '<label for="pf-nama">Nama tampilan</label>' +
         '<input type="text" id="pf-nama" maxlength="30" autocomplete="off">' +
-        '<dl class="pf-info"><dt>Nama pengguna</dt><dd id="pf-username"></dd><dt>Peran</dt><dd id="pf-peran"></dd></dl>' +
+        '<dl class="pf-info"><dt id="pf-lab">Nama pengguna</dt><dd id="pf-username"></dd><dt>Peran</dt><dd id="pf-peran"></dd></dl>' +
         '<p class="pf-galat" id="pf-galat" role="alert" hidden></p>' +
         '<div class="pf-aksi"><button type="button" class="pf-tombol" id="pf-batal">Batal</button>' +
-        '<button type="submit" class="pf-tombol pf-gelap">Simpan</button></div>' +
+        '<button type="submit" class="pf-tombol pf-gelap" id="pf-simpan">Simpan</button></div>' +
       '</form>';
     document.body.appendChild(dlg);
 

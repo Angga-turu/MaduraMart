@@ -128,7 +128,7 @@
     MaduraDB.catatTransaksi({
       item: ids().map(function (id) { return { id: Number(id), jumlah: keranjang[id] }; }),
       bayar: Number($('uang').value),
-      kasir: sesi.username
+      kasir: sesi.nama_tampilan || sesi.username
     }).then(function (rec) {
       $('dlg-bayar').close();
       keranjang = {};

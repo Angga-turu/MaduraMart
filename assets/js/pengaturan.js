@@ -76,22 +76,41 @@
   // ---------- Pengguna ----------
   function muatPengguna() {
     return MaduraDB.daftarPengguna().then(function (daftar) {
-      daftar.sort(function (a, b) { return a.username.localeCompare(b.username); });
+      daftar.sort(function (a, b) { return (a.nama_tampilan || a.username).localeCompare(b.nama_tampilan || b.username); });
       var isi = $('isi-pengguna');
       isi.textContent = '';
       daftar.forEach(function (u) {
         var saya = u.username === sesi.username;
+        var label = u.google ? (u.nama_tampilan || u.email) : u.username;
         var tr = el('tr');
+
         var tdNama = el('td');
-        tdNama.appendChild(el('strong', u.username));
+        tdNama.appendChild(el('strong', label));
+        if (u.google) { tdNama.appendChild(document.createTextNode(' ')); tdNama.appendChild(el('span', 'Google', 'lencana-kat')); }
         if (saya) { tdNama.appendChild(document.createTextNode(' ')); tdNama.appendChild(el('span', 'Anda', 'sorot')); }
+        if (u.google && u.email) tdNama.appendChild(el('div', u.email, 'email-kecil'));
         tr.appendChild(tdNama);
+
         var tdPeran = el('td');
-        tdPeran.appendChild(el('span', u.peran === 'admin' ? 'Admin' : 'Kasir', 'lencana-kat'));
+        var pilih = el('select', undefined, 'pilih pilih-kecil');
+        pilih.setAttribute('aria-label', 'Peran ' + label);
+        [['admin', 'Admin'], ['kasir', 'Kasir']].forEach(function (o) {
+          var op = el('option', o[1]); op.value = o[0]; pilih.appendChild(op);
+        });
+        pilih.value = u.peran;
+        pilih.addEventListener('change', function () {
+          MaduraDB.ubahPeran(u.username, pilih.value).then(function () {
+            Shell.toast('Peran diubah.');
+          }).catch(function (g) {
+            Shell.toast(galatDari(g));
+          }).then(muatPengguna);
+        });
+        tdPeran.appendChild(pilih);
         tr.appendChild(tdPeran);
+
         var tdAksi = el('td');
-        tdAksi.appendChild(ikonTombol('edit', 'Atur ulang sandi ' + u.username, '', function () { bukaAtur(u.username); }));
-        tdAksi.appendChild(ikonTombol('hapus', 'Hapus ' + u.username, 'bahaya', function () { bukaHapusPengguna(u.username); }, saya));
+        if (!u.google) tdAksi.appendChild(ikonTombol('edit', 'Atur ulang sandi ' + u.username, '', function () { bukaAtur(u.username); }));
+        tdAksi.appendChild(ikonTombol('hapus', 'Hapus ' + label, 'bahaya', function () { bukaHapusPengguna(u.username, label); }, saya));
         tr.appendChild(tdAksi);
         isi.appendChild(tr);
       });
@@ -132,14 +151,14 @@
     }).catch(function (g) { pesan('g-atur', galatDari(g)); });
   });
 
-  function bukaHapusPengguna(nama) {
+  function bukaHapusPengguna(username, label) {
     bukaBahaya({
       judul: 'Hapus pengguna?',
-      teks: 'Akun "' + nama + '" akan dihapus dan tidak bisa masuk lagi. Riwayat transaksinya tetap ada.',
+      teks: 'Akun "' + label + '" akan dihapus dan tidak bisa masuk lagi. Riwayat transaksinya tetap ada.',
       kata: 'HAPUS',
       tombol: 'Hapus pengguna',
       aksi: function () {
-        return MaduraDB.hapusPengguna(nama).then(function () { Shell.toast('Pengguna dihapus.'); return muatPengguna(); });
+        return MaduraDB.hapusPengguna(username).then(function () { Shell.toast('Pengguna dihapus.'); return muatPengguna(); });
       }
     });
   }
@@ -229,6 +248,11 @@
   Shell.mulai('pengaturan', true).then(function (s) {
     if (!s) return;
     sesi = s;
+    if (sesi.google) {
+      var catatan = el('p', 'Akunmu masuk lewat Google, jadi tidak memakai kata sandi di aplikasi ini.', 'bantu');
+      $('f-sandi').parentNode.insertBefore(catatan, $('f-sandi'));
+      $('f-sandi').hidden = true;
+    }
     return Promise.all([muatProfil(), muatPengguna()]);
   }).catch(function (g) {
     console.error(g);

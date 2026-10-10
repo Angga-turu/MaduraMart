@@ -134,6 +134,48 @@ var MaduraDB = (function () {
     });
   }
 
+  // Akun yang mendaftar sendiri (formulir atau Google) menjadi pemilik data di browser-nya.
+  // Ubah ke 'kasir' jika pendaftar baru hanya boleh membuka Dashboard dan Kasir.
+  var PERAN_DAFTAR = 'admin';
+
+  function daftar(nama, username, sandi) {
+    return tambahPengguna(username, sandi, PERAN_DAFTAR).then(function (u) {
+      return simpanProfil(u.username, { nama_tampilan: nama });
+    }).then(function () {
+      return masuk(username, sandi);
+    });
+  }
+
+  // Masuk dengan akun Google: akun dibuat saat pertama kali, nama dan foto selalu mengikuti Google
+  function masukGoogle(g) {
+    return Promise.resolve().then(function () {
+      if (!g || !g.sub) throw new Error('Data akun Google tidak lengkap.');
+      var username = 'google:' + g.sub;
+      return ambil('pengguna', username).then(function (u) {
+        var data = u || { username: username, peran: PERAN_DAFTAR, dibuat_pada: new Date().toISOString() };
+        data.google = true;
+        data.email = String(g.email || '');
+        data.nama_tampilan = String(g.nama || g.email || '').slice(0, 60);
+        data.foto = /^https:\/\/[^"'()\s]+$/.test(g.foto || '') ? g.foto : '';
+        return simpan('pengguna', data);
+      }).then(function () {
+        return simpan('sesi', { id: 1, username: username, masuk_pada: new Date().toISOString() });
+      });
+    });
+  }
+
+  function ubahPeran(username, peran) {
+    return semua('pengguna').then(function (l) {
+      if (peran !== 'admin' && peran !== 'kasir') throw new Error('Peran tidak valid.');
+      var u = l.filter(function (x) { return x.username === username; })[0];
+      if (!u) throw new Error('Pengguna tidak ditemukan.');
+      var jumlahAdmin = l.filter(function (x) { return x.peran === 'admin'; }).length;
+      if (u.peran === 'admin' && peran !== 'admin' && jumlahAdmin <= 1) throw new Error('Harus ada minimal satu admin.');
+      u.peran = peran;
+      return simpan('pengguna', u);
+    });
+  }
+
   var TABEL_DATA = ['pengaturan', 'pengguna', 'produk', 'transaksi'];
 
   function pengaturan() { return ambil('pengaturan', 1); }
@@ -151,7 +193,9 @@ var MaduraDB = (function () {
   // Daftar pengguna tanpa hash sandi
   function daftarPengguna() {
     return semua('pengguna').then(function (l) {
-      return l.map(function (u) { return { username: u.username, peran: u.peran || 'kasir', dibuat_pada: u.dibuat_pada || null }; });
+      return l.map(function (u) {
+        return { username: u.username, peran: u.peran || 'kasir', dibuat_pada: u.dibuat_pada || null, google: !!u.google, email: u.email || '', nama_tampilan: u.nama_tampilan || '' };
+      });
     });
   }
 
@@ -176,6 +220,7 @@ var MaduraDB = (function () {
       return Promise.all([ambil('pengguna', username), hash(username, sandiBaru)]);
     }).then(function (r) {
       if (!r[0]) throw new Error('Pengguna tidak ditemukan.');
+      if (r[0].google) throw new Error('Akun Google tidak memakai kata sandi.');
       r[0].sandi_hash = r[1];
       return simpan('pengguna', r[0]);
     });
@@ -298,14 +343,14 @@ var MaduraDB = (function () {
     return ambil('sesi', 1).then(function (sesi) {
       if (!sesi) return null;
       return ambil('pengguna', sesi.username).then(function (u) {
-        return u ? Object.assign({}, sesi, { peran: u.peran || 'kasir', nama_tampilan: u.nama_tampilan || '', foto: u.foto || '' }) : null;
+        return u ? Object.assign({}, sesi, { peran: u.peran || 'kasir', nama_tampilan: u.nama_tampilan || '', foto: u.foto || '', google: !!u.google, email: u.email || '' }) : null;
       });
     });
   }
 
   function keluar() { return hapus('sesi', 1); }
 
-  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk, simpanProfil: simpanProfil,
+  return { siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk, simpanProfil: simpanProfil, daftar: daftar, masukGoogle: masukGoogle, ubahPeran: ubahPeran,
     pengaturan: pengaturan, simpanPengaturan: simpanPengaturan, daftarPengguna: daftarPengguna, tambahPengguna: tambahPengguna,
     aturSandi: aturSandi, gantiSandi: gantiSandi, hapusPengguna: hapusPengguna, hapusTransaksi: hapusTransaksi,
     resetSemua: resetSemua, ekspor: ekspor, impor: impor };
