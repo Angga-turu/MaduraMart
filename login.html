@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
-<!-- versi-login-google: halaman masuk dan daftar, CSS dan JS digabung di file ini -->
+<!-- versi-login-persetujuan: halaman masuk dan daftar (dengan persetujuan), CSS dan JS digabung di file ini -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -177,17 +177,14 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
 .ganti { margin: 16px 0 0; text-align: center; font-size: 14px; color: var(--samar); }
 .kecil { margin: -8px 0 14px; font-size: 13px; color: var(--samar); }
 
-.pemisah { display: flex; align-items: center; gap: 12px; margin: 22px 0 16px; color: var(--samar); font-size: 14px; }
-.pemisah::before, .pemisah::after { content: ""; flex: 1; border-top: 2px dashed var(--samar); opacity: 0.6; }
-.google { display: flex; justify-content: center; min-height: 44px; }
-.google-mati { width: 100%; padding: 11px 14px; color: var(--samar); background: #fff; border: 2px solid var(--samar); }
-.google-mati:hover { background: #fff; color: var(--tinta); border-color: var(--tinta); }
-.info { margin: 10px 0 0; font-size: 13px; color: var(--galat); text-align: center; }
+.setuju { display: flex; align-items: flex-start; gap: 10px; margin: 2px 0 14px; font-size: 14px; font-weight: 400; line-height: 1.45; cursor: pointer; }
+.setuju input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; padding: 0; accent-color: var(--tinta); cursor: pointer; }
+.setuju a { color: var(--aksen); font-weight: 700; }
+#tombol-daftar:disabled, #tombol-daftar:disabled:hover { color: #f4f5f7; background: #b8bec5; opacity: 1; cursor: not-allowed; }
 [hidden] { display: none !important; }
 .hukum { margin: 6px 0 0; text-align: center; font-size: 12px; color: var(--samar); }
 .hukum a { color: var(--samar); }
 </style>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <main class="kartu">
@@ -247,21 +244,20 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
         
       </div>
 
+        <label class="setuju" for="d-setuju">
+          <input id="d-setuju" type="checkbox">
+          <span>Saya menyetujui <a href="ketentuan.html" target="_blank" rel="noopener">Ketentuan Layanan</a> dan <a href="privasi.html" target="_blank" rel="noopener">Kebijakan Privasi</a>.</span>
+        </label>
         <p id="galat-daftar" class="galat" role="alert" hidden></p>
-        <button id="tombol-daftar" type="submit">Buat akun</button>
+        <button id="tombol-daftar" type="submit" disabled>Buat akun</button>
       </form>
       <p class="ganti">Sudah punya akun? <button class="tautan" id="ke-masuk" type="button">Masuk</button></p>
     </section>
-
-    <div class="pemisah"><span>atau</span></div>
-    <div id="tombol-google" class="google"></div>
-    <p id="info-google" class="info" hidden></p>
 
     <p class="bantuan">Butuh bantuan? | <a href="https://wa.me/6287717682382" target="_blank" rel="noopener">Hubungi Admin!</a></p>
     <p class="hukum"><a href="privasi.html">Kebijakan Privasi</a> | <a href="ketentuan.html">Ketentuan Layanan</a></p>
   </main>
 
-  <script src="assets/js/konfigurasi.js?v=21"></script>
   <script src="assets/js/db.js?v=21"></script>
   <script>
 (function () {
@@ -339,6 +335,7 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
     galat('galat-daftar', '');
     var nama = $('d-nama').value.trim(), user = $('d-user').value.trim().toLowerCase();
     var sandi = $('d-sandi').value, ulang = $('d-ulang').value;
+    if (!$('d-setuju').checked) { galat('galat-daftar', 'Centang persetujuan Ketentuan Layanan dan Kebijakan Privasi dulu.'); return; }
     if (!nama) { galat('galat-daftar', 'Nama lengkap wajib diisi.'); return; }
     if (nama.length > 30) { galat('galat-daftar', 'Nama lengkap maksimal 30 karakter.'); return; }
     if (!/^[a-z0-9_]{3,20}$/.test(user)) { galat('galat-daftar', 'Nama pengguna 3 sampai 20 karakter: huruf kecil, angka, atau garis bawah.'); return; }
@@ -352,65 +349,15 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
       throw new Error('Akun dibuat, tetapi gagal masuk. Silakan masuk manual.');
     }).catch(function (err) {
       galat('galat-daftar', err.message || 'Pendaftaran gagal. Coba lagi.');
-      $('tombol-daftar').disabled = false;
+      $('tombol-daftar').disabled = !$('d-setuju').checked;
     });
   });
 
-  // ---------- Masuk dengan Google ----------
-  var coba = 0;
-
-  function googleMati(pesan) {
-    $('tombol-google').textContent = '';
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'google-mati';
-    b.textContent = 'Masuk dengan Google';
-    b.addEventListener('click', function () { $('info-google').hidden = false; });
-    $('tombol-google').appendChild(b);
-    $('info-google').textContent = pesan;
-  }
-
-  // Isi token Google (JWT) dibaca di sini. Tanda tangannya tidak diperiksa karena semua data aplikasi
-  // tersimpan di browser ini; yang diperiksa hanya penerbit, tujuan (Client ID), dan masa berlaku.
-  function bacaToken(token) {
-    var bagian = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    var teks = decodeURIComponent(atob(bagian).split('').map(function (c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(teks);
-  }
-
-  function setelahGoogle(jawaban) {
-    var id = KONFIGURASI.googleClientId, p;
-    try { p = bacaToken(jawaban.credential); } catch (e) { galat('galat-masuk', 'Respons Google tidak bisa dibaca. Coba lagi.'); return; }
-    var penerbitSah = p.iss === 'accounts.google.com' || p.iss === 'https://accounts.google.com';
-    if (!penerbitSah || p.aud !== id || !(p.exp * 1000 > Date.now()) || !p.sub || p.email_verified === false) {
-      galat('galat-masuk', 'Login Google ditolak. Coba lagi.');
-      return;
-    }
-    MaduraDB.siapkan().then(function () {
-      return MaduraDB.masukGoogle({ sub: p.sub, email: p.email, nama: p.name, foto: p.picture });
-    }).then(keDashboard).catch(function (err) {
-      console.error(err);
-      galat('galat-masuk', err.message || 'Login Google gagal. Coba lagi.');
-    });
-  }
-
-  function siapkanGoogle() {
-    var id = (typeof KONFIGURASI !== 'undefined' && KONFIGURASI.googleClientId) || '';
-    if (!id) { googleMati('Login Google belum diaktifkan. Pemilik aplikasi perlu mengisi Client ID di file konfigurasi.js.'); return; }
-    if (!(window.google && google.accounts && google.accounts.id)) {
-      if (++coba < 40) { setTimeout(siapkanGoogle, 250); return; }
-      googleMati('Layanan Google tidak bisa dimuat. Periksa koneksi internet, lalu muat ulang halaman.');
-      return;
-    }
-    google.accounts.id.initialize({ client_id: id, callback: setelahGoogle, ux_mode: 'popup' });
-    google.accounts.id.renderButton($('tombol-google'), {
-      type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular',
-      logo_alignment: 'left', width: Math.max(200, Math.min(400, $('tombol-google').clientWidth || 300))
-    });
-  }
-  window.addEventListener('load', siapkanGoogle);
+  // Tombol Buat akun baru aktif setelah persetujuan dicentang
+  $('d-setuju').addEventListener('change', function () {
+    $('tombol-daftar').disabled = !this.checked;
+    galat('galat-daftar', '');
+  });
 })();
 </script>
 </body>

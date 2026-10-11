@@ -8,11 +8,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --kuning: #ffd23f; --kertas: #fcfbf7; --tinta: #1d2b3a; --samar: #5b6773; --aksen: #0f766e; }
+    :root { --kuning: #ffd23f; --kertas: #fcfbf7; --tinta: #1d2b3a; --samar: #5b6773; --aksen: #0f766e; --garis: #e6e1d2; }
     * { box-sizing: border-box; }
     body { margin: 0; padding: 28px 16px 48px; background: var(--kuning); color: var(--tinta);
       font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-size: 16px; line-height: 1.65; }
-    main { max-width: 720px; margin: 0 auto; padding: 32px 30px 36px; background: var(--kertas); box-shadow: 0 8px 18px rgba(29, 43, 58, 0.15); }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 30px 36px; background: var(--kertas); box-shadow: 0 8px 18px rgba(29, 43, 58, 0.15); }
     .merek { margin: 0; font-family: "Courier Prime", monospace; font-size: 26px; font-weight: 700; }
     h1 { margin: 6px 0 4px; font-size: 26px; line-height: 1.25; }
     .tanggal { margin: 0 0 22px; padding-bottom: 18px; color: var(--samar); border-bottom: 2px dashed var(--samar); }
@@ -22,6 +22,14 @@
     a { color: var(--aksen); font-weight: 600; }
     a:focus-visible { outline: 3px solid var(--aksen); outline-offset: 2px; }
     .kembali { display: inline-block; margin-bottom: 18px; }
+    .gulir { overflow-x: auto; margin: 8px 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.5; }
+    th, td { padding: 9px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--garis); }
+    th { color: var(--samar); font-weight: 600; white-space: nowrap; }
+    td.npm { white-space: nowrap; }
+    .kontak { list-style: none; padding: 0; }
+    .kontak li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 14px; padding: 8px 0; border-bottom: 1px solid var(--garis); }
+    .kontak li:last-child { border-bottom: 0; }
   </style>
 </head>
 <body>
@@ -31,14 +39,27 @@
     <h1>Ketentuan Layanan</h1>
     <p class="tanggal">Terakhir diperbarui: 10 Oktober 2026</p>
 
-    <p>Dengan memakai MaduraMart, kamu menyetujui ketentuan berikut.</p>
+    <p>Dengan membuat akun dan memakai MaduraMart, kamu menyetujui ketentuan berikut.</p>
+
+    <h2>Dibuat oleh</h2>
+    <p>MaduraMart dibuat oleh <strong>Kelompok 4</strong>. Pekerjaan dibagi rata ke lima anggota, dengan rincian sebagai berikut:</p>
+    <div class="gulir"><table>
+      <thead><tr><th>No.</th><th>Nama</th><th>NPM</th><th>Bagian yang dikerjakan</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>DEVIT RIANASARI</td><td class="npm">2502210195</td><td>Halaman masuk dan daftar akun; Dashboard</td></tr>
+        <tr><td>2</td><td>MOHAMMAD HARIYANTO</td><td class="npm">2502210205</td><td>Layar pembuka; Profil pengguna dan foto; Penyimpanan data (database)</td></tr>
+        <tr><td>3</td><td>MOHAMMAD ANGGA KURNIAWAN FAHRAZY</td><td class="npm">2502210213</td><td>Halaman Kasir; Kebijakan Privasi dan Ketentuan Layanan</td></tr>
+        <tr><td>4</td><td>REVALDA AMILIA ARWAN NINGSH</td><td class="npm">2502210214</td><td>Halaman Laporan; Pengaturan profil toko</td></tr>
+        <tr><td>5</td><td>SEFTIANA KIKI ANDIRA</td><td class="npm">2502210193</td><td>Halaman Produk; Pengaturan pengguna, kata sandi, dan data</td></tr>
+      </tbody>
+    </table></div>
 
     <h2>Tujuan aplikasi</h2>
     <p>MaduraMart adalah aplikasi kasir sederhana yang dibuat sebagai proyek tugas kuliah. Aplikasi ini disediakan untuk belajar dan mencoba, bukan sebagai sistem pembukuan resmi.</p>
 
     <h2>Akun dan data</h2>
     <ul>
-      <li>Kamu bertanggung jawab menjaga kerahasiaan kata sandi dan akun Google yang kamu pakai.</li>
+      <li>Kamu bertanggung jawab menjaga kerahasiaan kata sandi akunmu.</li>
       <li>Data tersimpan di browser perangkatmu. Data bisa hilang jika data browser dibersihkan atau perangkat diganti, jadi unduh cadangan secara berkala lewat menu Pengaturan.</li>
       <li>Kamu bertanggung jawab atas kebenaran data produk dan transaksi yang kamu masukkan.</li>
     </ul>
@@ -47,7 +68,7 @@
     <p>Jangan memakai aplikasi ini untuk tujuan yang melanggar hukum, atau mencoba mengganggu, merusak, atau menyalahgunakan layanan.</p>
 
     <h2>Tanpa jaminan</h2>
-    <p>Aplikasi disediakan &ldquo;apa adanya&rdquo; tanpa jaminan apa pun, termasuk soal ketersediaan, ketepatan hitungan, atau kecocokan untuk kebutuhan tertentu. Pengembang tidak bertanggung jawab atas kerugian akibat pemakaian aplikasi atau hilangnya data.</p>
+    <p>Aplikasi disediakan &ldquo;apa adanya&rdquo; tanpa jaminan apa pun, termasuk soal ketersediaan, ketepatan hitungan, atau kecocokan untuk kebutuhan tertentu. Pembuat tidak bertanggung jawab atas kerugian akibat pemakaian aplikasi atau hilangnya data.</p>
 
     <h2>Perubahan</h2>
     <p>Ketentuan ini dapat berubah sewaktu-waktu. Memakai aplikasi setelah perubahan berarti kamu menerima ketentuan yang baru.</p>
@@ -55,9 +76,15 @@
     <h2>Privasi</h2>
     <p>Cara data diproses dijelaskan di <a href="privasi.html">Kebijakan Privasi</a>.</p>
 
-    <h2>Kontak</h2>
-    <p>Pertanyaan tentang halaman ini bisa disampaikan lewat WhatsApp admin di
-      <a href="https://wa.me/6287717682382" target="_blank" rel="noopener">087717682382</a>.</p>
+    <h2>Hubungi kami</h2>
+    <p>Jika ingin menghubungi pembuat, hubungi Kelompok 4 lewat WhatsApp:</p>
+    <ul class="kontak">
+      <li><span>1. DEVIT RIANASARI</span><a href="https://wa.me/6281371926815" target="_blank" rel="noopener">+62 813-7192-6815</a></li>
+      <li><span>2. MOHAMMAD HARIYANTO</span><a href="https://wa.me/6283856127632" target="_blank" rel="noopener">+62 838-5612-7632</a></li>
+      <li><span>3. MOHAMMAD ANGGA KURNIAWAN FAHRAZY</span><a href="https://wa.me/6287717682382" target="_blank" rel="noopener">+62 877-1768-2382</a></li>
+      <li><span>4. REVALDA AMILIA ARWAN NINGSH</span><a href="https://wa.me/6287701414947" target="_blank" rel="noopener">+62 877-0141-4947</a></li>
+      <li><span>5. SEFTIANA KIKI ANDIRA</span><a href="https://wa.me/6285337496013" target="_blank" rel="noopener">+62 853-3749-6013</a></li>
+    </ul>
   </main>
 </body>
 </html>
