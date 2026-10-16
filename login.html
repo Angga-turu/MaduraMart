@@ -182,6 +182,8 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
 .setuju a { color: var(--aksen); font-weight: 700; }
 #tombol-daftar:disabled, #tombol-daftar:disabled:hover { color: #f4f5f7; background: #b8bec5; opacity: 1; cursor: not-allowed; }
 [hidden] { display: none !important; }
+.lupa { margin: -6px 0 14px; text-align: right; font-size: 14px; }
+.info { margin: -4px 0 14px; color: var(--aksen); font-size: 14px; }
 .hukum { margin: 6px 0 0; text-align: center; font-size: 12px; color: var(--samar); }
 .hukum a { color: var(--samar); }
 </style>
@@ -210,10 +212,26 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
         <button class="mata" type="button" data-target="m-sandi" aria-label="Tampilkan kata sandi" aria-pressed="false"><svg class="mata-buka" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="mata-tutup" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.2A9.8 9.8 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.6 7.7A17 17 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
       </div>
 
+        <p class="lupa"><button class="tautan" id="ke-lupa" type="button">Lupa kata sandi?</button></p>
         <p id="galat-masuk" class="galat" role="alert" hidden></p>
         <button id="tombol-masuk" type="submit">Masuk</button>
       </form>
       <p class="ganti">Belum punya akun? <button class="tautan" id="ke-daftar" type="button">Daftar</button></p>
+    </section>
+
+    <section id="panel-lupa" hidden>
+      <form id="form-lupa" novalidate>
+        <p class="kecil" style="margin-top:0">Masukkan email akunmu. Kami kirim tautan untuk membuat kata sandi baru.</p>
+        <label for="l-email">Email</label>
+        <div class="kolom">
+          <svg class="ikon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          <input id="l-email" type="email" placeholder="Contoh: nama@gmail.com" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="80">
+        </div>
+        <p id="galat-lupa" class="galat" role="alert" hidden></p>
+        <p id="info-lupa" class="info" role="status" hidden></p>
+        <button id="tombol-lupa" type="submit">Kirim tautan</button>
+      </form>
+      <p class="ganti"><button class="tautan" id="dari-lupa" type="button">Kembali ke Masuk</button></p>
     </section>
 
     <section id="panel-daftar" hidden>
@@ -279,12 +297,22 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
       $('tab-' + t).setAttribute('aria-selected', String(aktif));
       $('panel-' + t).hidden = !aktif;
     });
-    galat('galat-masuk', ''); galat('galat-daftar', '');
+    $('panel-lupa').hidden = true;
+    galat('galat-masuk', ''); galat('galat-daftar', ''); galat('galat-lupa', ''); galat('info-lupa', '');
+  }
+  function tampilLupa() {
+    tampilTab('masuk');
+    $('panel-masuk').hidden = true;
+    $('panel-lupa').hidden = false;
+    $('l-email').value = $('m-user').value.trim();
+    $('l-email').focus();
   }
   $('tab-masuk').addEventListener('click', function () { tampilTab('masuk'); });
   $('tab-daftar').addEventListener('click', function () { tampilTab('daftar'); });
   $('ke-daftar').addEventListener('click', function () { tampilTab('daftar'); $('d-nama').focus(); });
   $('ke-masuk').addEventListener('click', function () { tampilTab('masuk'); $('m-user').focus(); });
+  $('ke-lupa').addEventListener('click', tampilLupa);
+  $('dari-lupa').addEventListener('click', function () { tampilTab('masuk'); $('m-user').focus(); });
   if (window.location.hash === '#daftar') tampilTab('daftar');
 
   // ---------- Tombol mata ----------
@@ -329,6 +357,23 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
       console.error(err);
       galat('galat-masuk', err.message || 'Tidak bisa terhubung ke Firebase. Periksa koneksi internet, lalu coba lagi.');
       $('tombol-masuk').disabled = false;
+    });
+  });
+
+  // ---------- Lupa kata sandi ----------
+  $('form-lupa').addEventListener('submit', function (e) {
+    e.preventDefault();
+    galat('galat-lupa', ''); galat('info-lupa', '');
+    var email = $('l-email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { galat('galat-lupa', 'Format email tidak valid. Contoh: nama@gmail.com'); return; }
+    $('tombol-lupa').disabled = true;
+    MaduraDB.kirimResetSandi(email).then(function () {
+      galat('info-lupa', 'Jika email itu terdaftar, tautan untuk membuat kata sandi baru sudah dikirim. Cek kotak masuk dan folder Spam.');
+      setTimeout(function () { $('tombol-lupa').disabled = false; }, 30000);
+    }).catch(function (err) {
+      console.error(err);
+      galat('galat-lupa', err.message || 'Tidak bisa terhubung ke Firebase. Periksa koneksi internet, lalu coba lagi.');
+      $('tombol-lupa').disabled = false;
     });
   });
 
