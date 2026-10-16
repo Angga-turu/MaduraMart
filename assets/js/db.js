@@ -1,11 +1,4 @@
-// Database MaduraMart di Firebase (Authentication + Cloud Firestore).
-// Nama fungsinya sama dengan versi IndexedDB lama, jadi halaman lain hampir tidak perlu diubah.
-// Data tiap akun disimpan terpisah di Firestore:
-//   users/{uid}                 profil (nama tampilan, foto)
-//   users/{uid}/produk/{id}     daftar produk
-//   users/{uid}/transaksi/{id}  riwayat transaksi
-//   users/{uid}/pengaturan/utama  pengaturan toko
-//   users/{uid}/meta/penghitung   nomor terakhir produk dan transaksi
+
 var MaduraDB = (function () {
   var firebaseConfig = {
     apiKey: "AIzaSyCjOZ8fLFH5rWcGKxK9BAcAGcalF2qOrYY",
@@ -65,6 +58,7 @@ var MaduraDB = (function () {
     'auth/too-many-requests': 'Terlalu banyak percobaan. Tunggu beberapa menit, lalu coba lagi.',
     'auth/operation-not-allowed': 'Login Email/Kata sandi belum diaktifkan di Firebase Authentication.',
     'auth/user-disabled': 'Akun ini dinonaktifkan.',
+    'auth/missing-email': 'Isi email dulu.',
     'auth/requires-recent-login': 'Demi keamanan, keluar lalu masuk lagi, kemudian coba kembali.',
     'permission-denied': 'Akses data ditolak. Periksa aturan keamanan Firestore di konsol Firebase.',
     'unavailable': 'Tidak bisa terhubung ke server. Periksa koneksi internet, lalu coba lagi.',
@@ -209,6 +203,21 @@ var MaduraDB = (function () {
         dibuat_pada: new Date().toISOString()
       }).then(function () { return true; });
     }).catch(lemparTerjemah);
+  }
+
+  // Mengirim email berisi tautan untuk membuat kata sandi baru.
+  // Email yang tidak terdaftar diperlakukan sama seperti yang terdaftar (tetap "berhasil"),
+  // supaya orang lain tidak bisa mengecek siapa saja yang punya akun.
+  function kirimResetSandi(email) {
+    return siap().then(function () {
+      auth.languageCode = 'id';
+      return auth.sendPasswordResetEmail(String(email || '').trim());
+    }).then(function () {
+      return true;
+    }, function (e) {
+      if (e && e.code === 'auth/user-not-found') return true;
+      throw terjemah(e);
+    });
   }
 
   function keluar() {
@@ -408,7 +417,7 @@ var MaduraDB = (function () {
   }
 
   return {
-    siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, daftar: daftar,
+    siapkan: siapkan, masuk: masuk, sesiAktif: sesiAktif, keluar: keluar, daftar: daftar, kirimResetSandi: kirimResetSandi,
     semua: semua, catatTransaksi: catatTransaksi, simpanProduk: simpanProduk, hapusProduk: hapusProduk,
     simpanProfil: simpanProfil, pengaturan: pengaturan, simpanPengaturan: simpanPengaturan,
     gantiSandi: gantiSandi, daftarPengguna: daftarPengguna,
