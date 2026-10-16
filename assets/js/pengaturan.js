@@ -1,6 +1,6 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var sesi = null, aksiBahaya = null, kataBahaya = '', yangDiubah = null;
+  var sesi = null, aksiBahaya = null, kataBahaya = '';
 
   function el(tag, teks, kelas) {
     var e = document.createElement(tag);
@@ -9,16 +9,6 @@
     return e;
   }
   function pesan(id, teks) { $(id).textContent = teks || ''; $(id).hidden = !teks; }
-  function ikonTombol(ikon, label, kelas, aksi, mati) {
-    var b = el('button', undefined, 'ikon-tombol' + (kelas ? ' ' + kelas : ''));
-    b.type = 'button';
-    b.disabled = !!mati;
-    b.setAttribute('aria-label', label);
-    b.title = label;
-    b.innerHTML = '<svg class="ikon" width="18" height="18"><use href="#i-' + ikon + '"/></svg>';
-    b.addEventListener('click', aksi);
-    return b;
-  }
   function galatDari(g) { return (g && g.message) || 'Terjadi kesalahan. Coba lagi.'; }
 
   // ---------- Tab ----------
@@ -73,96 +63,6 @@
     }).catch(function (g) { pesan('g-sandi', galatDari(g)); });
   });
 
-  // ---------- Pengguna ----------
-  function muatPengguna() {
-    return MaduraDB.daftarPengguna().then(function (daftar) {
-      daftar.sort(function (a, b) { return (a.nama_tampilan || a.username).localeCompare(b.nama_tampilan || b.username); });
-      var isi = $('isi-pengguna');
-      isi.textContent = '';
-      daftar.forEach(function (u) {
-        var saya = u.username === sesi.username;
-        var label = u.google ? (u.nama_tampilan || u.email) : u.username;
-        var tr = el('tr');
-
-        var tdNama = el('td');
-        tdNama.appendChild(el('strong', label));
-        if (u.google) { tdNama.appendChild(document.createTextNode(' ')); tdNama.appendChild(el('span', 'Google', 'lencana-kat')); }
-        if (saya) { tdNama.appendChild(document.createTextNode(' ')); tdNama.appendChild(el('span', 'Anda', 'sorot')); }
-        if (u.google && u.email) tdNama.appendChild(el('div', u.email, 'email-kecil'));
-        tr.appendChild(tdNama);
-
-        var tdPeran = el('td');
-        var pilih = el('select', undefined, 'pilih pilih-kecil');
-        pilih.setAttribute('aria-label', 'Peran ' + label);
-        [['admin', 'Admin'], ['kasir', 'Kasir']].forEach(function (o) {
-          var op = el('option', o[1]); op.value = o[0]; pilih.appendChild(op);
-        });
-        pilih.value = u.peran;
-        pilih.addEventListener('change', function () {
-          MaduraDB.ubahPeran(u.username, pilih.value).then(function () {
-            Shell.toast('Peran diubah.');
-          }).catch(function (g) {
-            Shell.toast(galatDari(g));
-          }).then(muatPengguna);
-        });
-        tdPeran.appendChild(pilih);
-        tr.appendChild(tdPeran);
-
-        var tdAksi = el('td');
-        if (!u.google) tdAksi.appendChild(ikonTombol('edit', 'Atur ulang sandi ' + u.username, '', function () { bukaAtur(u.username); }));
-        tdAksi.appendChild(ikonTombol('hapus', 'Hapus ' + label, 'bahaya', function () { bukaHapusPengguna(u.username, label); }, saya));
-        tr.appendChild(tdAksi);
-        isi.appendChild(tr);
-      });
-    });
-  }
-
-  $('tambah-pengguna').addEventListener('click', function () {
-    $('f-pengguna').reset();
-    pesan('g-pengguna', '');
-    $('dlg-pengguna').showModal();
-    $('u-nama').focus();
-  });
-  $('batal-pengguna').addEventListener('click', function () { $('dlg-pengguna').close(); });
-  $('f-pengguna').addEventListener('submit', function (e) {
-    e.preventDefault();
-    pesan('g-pengguna', '');
-    MaduraDB.tambahPengguna($('u-nama').value, $('u-sandi').value, $('u-peran').value).then(function () {
-      $('dlg-pengguna').close();
-      Shell.toast('Pengguna ditambahkan.');
-      return muatPengguna();
-    }).catch(function (g) { pesan('g-pengguna', galatDari(g)); });
-  });
-
-  function bukaAtur(nama) {
-    yangDiubah = nama;
-    $('f-atur').reset();
-    pesan('g-atur', '');
-    $('nama-atur').textContent = nama;
-    $('dlg-atur').showModal();
-    $('a-sandi').focus();
-  }
-  $('batal-atur').addEventListener('click', function () { $('dlg-atur').close(); });
-  $('f-atur').addEventListener('submit', function (e) {
-    e.preventDefault();
-    MaduraDB.aturSandi(yangDiubah, $('a-sandi').value).then(function () {
-      $('dlg-atur').close();
-      Shell.toast('Kata sandi ' + yangDiubah + ' diatur ulang.');
-    }).catch(function (g) { pesan('g-atur', galatDari(g)); });
-  });
-
-  function bukaHapusPengguna(username, label) {
-    bukaBahaya({
-      judul: 'Hapus pengguna?',
-      teks: 'Akun "' + label + '" akan dihapus dan tidak bisa masuk lagi. Riwayat transaksinya tetap ada.',
-      kata: 'HAPUS',
-      tombol: 'Hapus pengguna',
-      aksi: function () {
-        return MaduraDB.hapusPengguna(username).then(function () { Shell.toast('Pengguna dihapus.'); return muatPengguna(); });
-      }
-    });
-  }
-
   // ---------- Dialog konfirmasi bahaya (harus mengetik kata tertentu) ----------
   function bukaBahaya(o) {
     aksiBahaya = o.aksi;
@@ -212,12 +112,12 @@
       try { data = JSON.parse(pembaca.result); } catch (e) { Shell.toast('File tidak bisa dibaca. Pilih file cadangan .json.'); return; }
       bukaBahaya({
         judul: 'Pulihkan dari cadangan?',
-        teks: 'Semua data sekarang (produk, transaksi, pengguna, pengaturan) akan diganti dengan isi file "' + file.name + '". Setelah itu kamu diminta masuk lagi.',
+        teks: 'Semua data sekarang (produk, transaksi, dan pengaturan toko) akan diganti dengan isi file "' + file.name + '". Akunmu tidak berubah.',
         kata: 'PULIHKAN',
         tombol: 'Pulihkan data',
         aksi: function () {
-          return MaduraDB.impor(data).then(function () { return MaduraDB.keluar(); }).then(function () {
-            window.location.replace('login.html');
+          return MaduraDB.impor(data).then(function () {
+            window.location.replace('dashboard.html');
           });
         }
       });
@@ -238,7 +138,7 @@
   $('reset-semua').addEventListener('click', function () {
     bukaBahaya({
       judul: 'Kembalikan ke data awal?',
-      teks: 'Semua produk, transaksi, pengguna, dan pengaturan dihapus, lalu diganti data awal (akun admin bawaan dan produk contoh). Tindakan ini tidak bisa dibatalkan.',
+      teks: 'Semua produk, transaksi, dan pengaturan toko dihapus, lalu diganti data awal (produk contoh). Akunmu tidak dihapus, tetapi kamu akan keluar dan perlu masuk lagi. Tindakan ini tidak bisa dibatalkan.',
       kata: 'RESET',
       tombol: 'Reset semua data',
       aksi: function () { return MaduraDB.resetSemua().then(function () { window.location.replace('index.html'); }); }
@@ -248,14 +148,9 @@
   Shell.mulai('pengaturan', true).then(function (s) {
     if (!s) return;
     sesi = s;
-    if (sesi.google) {
-      var catatan = el('p', 'Akunmu masuk lewat Google, jadi tidak memakai kata sandi di aplikasi ini.', 'bantu');
-      $('f-sandi').parentNode.insertBefore(catatan, $('f-sandi'));
-      $('f-sandi').hidden = true;
-    }
-    return Promise.all([muatProfil(), muatPengguna()]);
+    return muatProfil();
   }).catch(function (g) {
     console.error(g);
-    Shell.toast('Data pengaturan belum bisa dimuat. Coba muat ulang halaman.');
+    Shell.toast((g && g.message) || 'Data pengaturan belum bisa dimuat. Coba muat ulang halaman.');
   });
 })();
