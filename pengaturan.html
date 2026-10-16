@@ -7,11 +7,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/dashboard.css?v=21">
-  <link rel="stylesheet" href="assets/css/kasir.css?v=21">
-  <link rel="stylesheet" href="assets/css/produk.css?v=21">
-  <link rel="stylesheet" href="assets/css/pengaturan.css?v=21">
-  <link rel="stylesheet" href="assets/css/profil.css?v=21">
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=22">
+  <link rel="stylesheet" href="assets/css/kasir.css?v=22">
+  <link rel="stylesheet" href="assets/css/produk.css?v=22">
+  <link rel="stylesheet" href="assets/css/pengaturan.css?v=22">
+  <link rel="stylesheet" href="assets/css/profil.css?v=22">
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol><symbol id="i-kasir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></symbol><symbol id="i-produk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol><symbol id="i-laporan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol><symbol id="i-atur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol><symbol id="i-keluar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></symbol><symbol id="i-tambah" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3M16 7l3 3M14 9l2 2"/></symbol><symbol id="i-hapus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></symbol><symbol id="i-unduh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol></svg>
@@ -41,7 +41,7 @@
       </header>
 
       <main class="halaman-atur">
-        <div class="kategori" role="group" aria-label="Bagian pengaturan"><button class="chip-kat aktif" type="button" data-panel="profil">Profil toko</button><button class="chip-kat" type="button" data-panel="keamanan">Kata sandi</button><button class="chip-kat" type="button" data-panel="pengguna">Pengguna</button><button class="chip-kat" type="button" data-panel="data">Data</button></div>
+        <div class="kategori" role="group" aria-label="Bagian pengaturan"><button class="chip-kat aktif" type="button" data-panel="profil">Profil toko</button><button class="chip-kat" type="button" data-panel="keamanan">Kata sandi</button><button class="chip-kat" type="button" data-panel="data">Data</button></div>
 
         <section class="kartu panel" id="p-profil">
           <div class="kepala"><h3>Profil toko</h3></div>
@@ -68,23 +68,13 @@
           </form>
         </section>
 
-        <section class="kartu panel" id="p-pengguna" hidden>
-          <div class="kepala"><h3>Pengguna</h3><button class="tombol gelap" id="tambah-pengguna" type="button"><svg class="ikon" width="18" height="18"><use href="#i-tambah"/></svg>Tambah pengguna</button></div>
-          <p class="bantu"><b>Admin</b> bisa membuka semua menu. <b>Kasir</b> hanya bisa membuka Dashboard dan Kasir.</p>
-          <div class="gulir">
-            <table class="tabel-produk tabel-pengguna">
-              <thead><tr><th>Nama pengguna</th><th>Peran</th><th><span class="sr-only">Aksi</span></th></tr></thead>
-              <tbody id="isi-pengguna"></tbody>
-            </table>
-          </div>
-        </section>
 
         <section class="kartu panel" id="p-data" hidden>
           <div class="kepala"><h3>Data aplikasi</h3></div>
-          <p class="bantu">Semua data tersimpan di browser perangkat ini. Unduh cadangan secara berkala.</p>
+          <p class="bantu">Data tersimpan di akunmu (Firebase), jadi bisa dibuka dari perangkat mana pun. Unduh cadangan secara berkala.</p>
           <div class="blok">
             <h4>Unduh cadangan</h4>
-            <p>Simpan semua produk, transaksi, pengguna, dan pengaturan ke satu file.</p>
+            <p>Simpan semua produk, transaksi, dan pengaturan ke satu file.</p>
             <button class="tombol terang" id="unduh-cadangan" type="button"><svg class="ikon" width="18" height="18"><use href="#i-unduh"/></svg>Unduh cadangan</button>
           </div>
           <div class="blok">
@@ -100,7 +90,7 @@
               <button class="tombol garis-bahaya" id="hapus-transaksi" type="button">Hapus riwayat transaksi</button>
             </div>
             <div class="blok">
-              <p>Kembalikan semuanya ke data awal (akun admin bawaan dan produk contoh).</p>
+              <p>Kembalikan semuanya ke data awal (produk contoh). Setelah itu kamu otomatis keluar dan perlu masuk lagi.</p>
               <button class="tombol garis-bahaya" id="reset-semua" type="button">Reset semua data</button>
             </div>
           </div>
@@ -108,34 +98,6 @@
       </main>
     </div>
   </div>
-
-  <dialog id="dlg-pengguna" aria-labelledby="judul-pengguna">
-    <form class="dlg" id="f-pengguna" novalidate>
-      <h2 id="judul-pengguna">Tambah pengguna</h2>
-      <p class="lihat">Akun baru bisa langsung dipakai untuk masuk.</p>
-        <div class="medan"><label for="u-nama">Nama pengguna</label><input id="u-nama" type="text" maxlength="20" autocomplete="off" autocapitalize="none" placeholder="Contoh: kasir1"></div>
-        <div class="medan"><label for="u-sandi">Kata sandi (minimal 6 karakter)</label><input id="u-sandi" type="password" autocomplete="new-password"></div>
-      <div class="medan"><label for="u-peran">Peran</label><select class="pilih" id="u-peran"><option value="kasir">Kasir</option><option value="admin">Admin</option></select></div>
-      <p class="galat-form" id="g-pengguna" role="alert" hidden></p>
-      <div class="dlg-aksi">
-        <button class="tombol terang" id="batal-pengguna" type="button">Batal</button>
-        <button class="tombol gelap" type="submit">Simpan</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="dlg-atur" aria-labelledby="judul-atur">
-    <form class="dlg" id="f-atur" novalidate>
-      <h2 id="judul-atur">Atur ulang kata sandi</h2>
-      <p class="lihat">Untuk akun <strong id="nama-atur"></strong></p>
-        <div class="medan"><label for="a-sandi">Kata sandi baru</label><input id="a-sandi" type="password" autocomplete="new-password"></div>
-      <p class="galat-form" id="g-atur" role="alert" hidden></p>
-      <div class="dlg-aksi">
-        <button class="tombol terang" id="batal-atur" type="button">Batal</button>
-        <button class="tombol gelap" type="submit">Simpan</button>
-      </div>
-    </form>
-  </dialog>
 
   <dialog id="dlg-bahaya" aria-labelledby="b-judul">
     <div class="dlg">
@@ -152,8 +114,11 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/js/db.js?v=21"></script>
-  <script src="assets/js/shell.js?v=21"></script>
-  <script src="assets/js/pengaturan.js?v=21"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="assets/js/db.js?v=22"></script>
+  <script src="assets/js/shell.js?v=22"></script>
+  <script src="assets/js/pengaturan.js?v=22"></script>
 </body>
 </html>
