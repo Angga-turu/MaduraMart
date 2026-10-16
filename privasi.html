@@ -37,21 +37,22 @@
     <a class="kembali" href="login.html">&larr; Kembali ke halaman masuk</a>
     <p class="merek">MaduraMart</p>
     <h1>Kebijakan Privasi</h1>
-    <p class="tanggal">Terakhir diperbarui: 10 Oktober 2026</p>
+    <p class="tanggal">Terakhir diperbarui: 15 Oktober 2026</p>
 
     <p>MaduraMart adalah aplikasi kasir yang dibuat oleh Kelompok 4 sebagai proyek tugas kuliah. Halaman ini menjelaskan data apa yang diproses aplikasi dan bagaimana data itu diperlakukan.</p>
 
     <h2>Data yang diproses</h2>
     <ul>
-      <li><strong>Akun:</strong> nama lengkap, nama pengguna, kata sandi (disimpan hanya dalam bentuk acak atau hash, bukan tulisan asli), dan foto profil jika kamu mengunggahnya.</li>
+      <li><strong>Akun:</strong> nama lengkap, alamat email, kata sandi (dikelola oleh Firebase Authentication dan disimpan dalam bentuk hash, bukan tulisan asli), dan foto profil jika kamu mengunggahnya.</li>
       <li><strong>Data usaha yang kamu masukkan:</strong> produk, harga, stok, transaksi penjualan, dan pengaturan toko.</li>
     </ul>
 
     <h2>Tempat penyimpanan</h2>
-    <p>Semua data di atas disimpan di <strong>browser perangkatmu sendiri</strong> (penyimpanan IndexedDB). Data tidak dikirim ke server milik pengembang, karena aplikasi ini tidak memiliki server. Akibatnya, data satu perangkat tidak bisa dilihat dari perangkat lain atau oleh pengguna lain, dan data dapat hilang jika kamu membersihkan data browser.</p>
+    <p>Semua data di atas disimpan di <strong>Google Firebase</strong> (Firebase Authentication untuk akun dan Cloud Firestore untuk data usaha) milik proyek MaduraMart. Data tiap akun dipisah: aturan keamanan hanya mengizinkan pemilik akun membaca dan mengubah datanya sendiri, sehingga pengguna lain tidak bisa melihatnya. Karena tersimpan online, data bisa dibuka dari perangkat mana pun setelah masuk. Perlu diketahui, pengembang sebagai pemilik proyek Firebase secara teknis dapat melihat data di konsol Firebase, tetapi tidak membagikan atau menjualnya.</p>
 
     <h2>Layanan pihak ketiga</h2>
     <ul>
+      <li><strong>Google Firebase:</strong> akun dan data usaha diproses di server Google sesuai kebijakan privasi Google.</li>
       <li><strong>Google Fonts:</strong> huruf aplikasi dimuat dari server Google, sehingga Google dapat menerima alamat IP perangkatmu sesuai kebijakan privasinya sendiri.</li>
       <li><strong>jsDelivr:</strong> pustaka untuk membuat file Excel di halaman Laporan dimuat dari jaringan jsDelivr.</li>
       <li>Aplikasi ini tidak memakai iklan, alat analitik, maupun cookie pelacak milik pengembang.</li>
@@ -62,7 +63,7 @@
 
     <h2>Mengelola dan menghapus data</h2>
     <ul>
-      <li>Hapus riwayat transaksi atau seluruh data lewat menu <strong>Pengaturan &rarr; Data</strong>, atau hapus data situs ini lewat pengaturan browser.</li>
+      <li>Hapus riwayat transaksi atau seluruh data lewat menu <strong>Pengaturan &rarr; Data</strong>. Untuk menghapus akun sepenuhnya, hubungi Kelompok 4 lewat WhatsApp (kontak di bawah).</li>
       <li>Unduh cadangan lewat menu <strong>Pengaturan &rarr; Data</strong> sebelum menghapus data.</li>
     </ul>
 
