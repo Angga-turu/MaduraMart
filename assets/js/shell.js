@@ -58,7 +58,7 @@ var Shell = (function () {
       // Database tidak bisa dibuka: tampilkan pesan, jangan lempar ke login (bisa berputar terus)
       console.error(galat);
       var p = document.createElement('p');
-      p.textContent = 'Database tidak bisa dibuka. Tutup tab MaduraMart yang lain, lalu muat ulang halaman.';
+      p.textContent = (galat && galat.message) || 'Tidak bisa terhubung ke Firebase. Periksa koneksi internet, lalu muat ulang halaman.';
       p.style.cssText = 'margin:0;padding:24px;font-weight:600';
       document.body.appendChild(p);
       return null;
@@ -113,8 +113,8 @@ var Shell = (function () {
     $('pf-nama').value = sesiProfil.nama_tampilan || '';
     $('pf-nama').placeholder = sesiProfil.username;
     var google = !!sesiProfil.google;
-    $('pf-lab').textContent = google ? 'Email' : 'Nama pengguna';
-    $('pf-username').textContent = google ? (sesiProfil.email || 'Akun Google') : sesiProfil.username;
+    $('pf-lab').textContent = 'Email';
+    $('pf-username').textContent = sesiProfil.email || sesiProfil.username;
     $('pf-ubah').hidden = google;
     $('pf-nama').disabled = google;
     $('pf-simpan').hidden = google;
@@ -147,7 +147,7 @@ var Shell = (function () {
             '<button type="button" class="pf-tombol pf-teks" id="pf-hapus-foto">Hapus foto</button>' +
             '<input type="file" id="pf-berkas" accept="image/*" hidden>' +
           '</div></div>' +
-        '<p class="pf-bantu">Foto dipotong persegi, dikecilkan, dan disimpan di browser ini.</p>' +
+        '<p class="pf-bantu">Foto dipotong persegi, dikecilkan, lalu disimpan di akunmu.</p>' +
         '<p class="pf-bantu" id="pf-google" hidden>Nama dan foto diambil dari akun Google dan diperbarui setiap kali kamu masuk.</p>' +
         '<label for="pf-nama">Nama tampilan</label>' +
         '<input type="text" id="pf-nama" maxlength="30" autocomplete="off">' +
