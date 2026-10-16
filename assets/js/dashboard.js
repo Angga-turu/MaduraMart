@@ -143,9 +143,9 @@
       toast('Data belum bisa dimuat. Coba muat ulang halaman.');
     });
   }, function (galat) {
-    // Database tidak bisa dibuka: tampilkan pesan. Jangan kirim ke login (bisa berputar terus).
+    // Tidak bisa terhubung ke Firebase: tampilkan pesan. Jangan kirim ke login (bisa berputar terus).
     console.error(galat);
-    gagalMuat('Database tidak bisa dibuka. Tutup tab MaduraMart yang lain, lalu muat ulang halaman.');
+    gagalMuat((galat && galat.message) || 'Tidak bisa terhubung ke Firebase. Periksa koneksi internet, lalu muat ulang halaman.');
   });
 
   $('keluar').addEventListener('click', function () {
