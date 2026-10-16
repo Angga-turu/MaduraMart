@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
-<!-- versi-login-persetujuan: halaman masuk dan daftar (dengan persetujuan), CSS dan JS digabung di file ini -->
+<!-- versi-login-firebase: masuk dan daftar memakai email (Firebase Authentication), CSS dan JS digabung di file ini -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -197,10 +197,10 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
 
     <section id="panel-masuk">
       <form id="form-masuk" novalidate>
-      <label for="m-user">Nama pengguna</label>
+      <label for="m-user">Email</label>
       <div class="kolom">
-        <svg class="ikon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
-        <input id="m-user" type="text" placeholder="Masukkan nama pengguna" autocomplete="username" autocapitalize="none">
+        <svg class="ikon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        <input id="m-user" type="email" placeholder="Masukkan email, mis. nama@gmail.com" autocomplete="email" autocapitalize="none" spellcheck="false">
         
       </div>
       <label for="m-sandi">Kata sandi</label>
@@ -224,13 +224,13 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
         <input id="d-nama" type="text" placeholder="Masukkan nama lengkap" autocomplete="name" maxlength="30">
         
       </div>
-      <label for="d-user">Nama pengguna</label>
+      <label for="d-email">Email</label>
       <div class="kolom">
-        <svg class="ikon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
-        <input id="d-user" type="text" placeholder="Contoh: toko_madura" autocomplete="username" autocapitalize="none" maxlength="20">
+        <svg class="ikon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        <input id="d-email" type="email" placeholder="Contoh: nama@gmail.com" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="80">
         
       </div>
-      <p class="kecil">Huruf kecil, angka, atau garis bawah (3 sampai 20 karakter).</p>
+      <p class="kecil">Pakai email yang aktif, misalnya Gmail.</p>
       <label for="d-sandi">Kata sandi</label>
       <div class="kolom">
         <svg class="ikon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
@@ -258,7 +258,10 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
     <p class="hukum"><a href="privasi.html">Kebijakan Privasi</a> | <a href="ketentuan.html">Ketentuan Layanan</a></p>
   </main>
 
-  <script src="assets/js/db.js?v=21"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="assets/js/db.js?v=22"></script>
   <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -308,23 +311,23 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
     keDashboard();
   }).catch(function (e) { console.error(e); });
 
-  // ---------- Masuk dengan nama pengguna dan kata sandi ----------
+  // ---------- Masuk dengan email dan kata sandi ----------
   $('form-masuk').addEventListener('submit', function (e) {
     e.preventDefault();
     galat('galat-masuk', '');
-    if (!$('m-user').value.trim() || !$('m-sandi').value) { galat('galat-masuk', 'Isi nama pengguna dan kata sandi.'); return; }
+    if (!$('m-user').value.trim() || !$('m-sandi').value) { galat('galat-masuk', 'Isi email dan kata sandi.'); return; }
     $('tombol-masuk').disabled = true;
     MaduraDB.siapkan().then(function () {
       return MaduraDB.masuk($('m-user').value, $('m-sandi').value);
     }).then(function (berhasil) {
       if (berhasil) { keDashboard(); return; }
-      galat('galat-masuk', 'Nama pengguna atau kata sandi salah.');
+      galat('galat-masuk', 'Email atau kata sandi salah.');
       $('m-sandi').value = '';
       $('m-sandi').focus();
       $('tombol-masuk').disabled = false;
     }).catch(function (err) {
       console.error(err);
-      galat('galat-masuk', 'Database di browser tidak bisa dibuka. Matikan mode privat, lalu muat ulang.');
+      galat('galat-masuk', err.message || 'Tidak bisa terhubung ke Firebase. Periksa koneksi internet, lalu coba lagi.');
       $('tombol-masuk').disabled = false;
     });
   });
@@ -333,17 +336,17 @@ h1 { margin-bottom: 18px; padding-bottom: 18px; }
   $('form-daftar').addEventListener('submit', function (e) {
     e.preventDefault();
     galat('galat-daftar', '');
-    var nama = $('d-nama').value.trim(), user = $('d-user').value.trim().toLowerCase();
+    var nama = $('d-nama').value.trim(), email = $('d-email').value.trim().toLowerCase();
     var sandi = $('d-sandi').value, ulang = $('d-ulang').value;
     if (!$('d-setuju').checked) { galat('galat-daftar', 'Centang persetujuan Ketentuan Layanan dan Kebijakan Privasi dulu.'); return; }
     if (!nama) { galat('galat-daftar', 'Nama lengkap wajib diisi.'); return; }
     if (nama.length > 30) { galat('galat-daftar', 'Nama lengkap maksimal 30 karakter.'); return; }
-    if (!/^[a-z0-9_]{3,20}$/.test(user)) { galat('galat-daftar', 'Nama pengguna 3 sampai 20 karakter: huruf kecil, angka, atau garis bawah.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { galat('galat-daftar', 'Format email tidak valid. Contoh: nama@gmail.com'); return; }
     if (sandi.length < 6) { galat('galat-daftar', 'Kata sandi minimal 6 karakter.'); return; }
     if (sandi !== ulang) { galat('galat-daftar', 'Pengulangan kata sandi tidak sama.'); return; }
     $('tombol-daftar').disabled = true;
     MaduraDB.siapkan().then(function () {
-      return MaduraDB.daftar(nama, user, sandi);
+      return MaduraDB.daftar(nama, email, sandi);
     }).then(function (berhasil) {
       if (berhasil) { keDashboard(); return; }
       throw new Error('Akun dibuat, tetapi gagal masuk. Silakan masuk manual.');
